@@ -217,7 +217,7 @@ export default function AboutPage() {
           {/* Devansh Pandey */}
           <div className="glass-panel p-6 rounded-3xl border-white/5 flex flex-col items-center text-center gap-5 group hover:border-accent-secondary/40 transition-all duration-300 relative overflow-hidden">
             <div className="mt-2">
-              <MemberAvatar src="/team/devansh.jpg" initials="DP" />
+              <MemberAvatar src="/devansh.png" initials="DP" />
             </div>
 
             <div className="space-y-1 z-10">
@@ -229,7 +229,7 @@ export default function AboutPage() {
           {/* Deepa Choudhary */}
           <div className="glass-panel p-6 rounded-3xl border-white/5 flex flex-col items-center text-center gap-5 group hover:border-accent-secondary/40 transition-all duration-300 relative overflow-hidden">
             <div className="mt-2">
-              <MemberAvatar src="/team/deepa.jpg" initials="DC" />
+              <MemberAvatar src="/deepa.jpeg" initials="DC" />
             </div>
 
             <div className="space-y-1 z-10">
@@ -241,7 +241,7 @@ export default function AboutPage() {
           {/* Aditi Deshmukh */}
           <div className="glass-panel p-6 rounded-3xl border-white/5 flex flex-col items-center text-center gap-5 group hover:border-accent-secondary/40 transition-all duration-300 relative overflow-hidden">
             <div className="mt-2">
-              <MemberAvatar src="/team/aditi.jpg" initials="AD" />
+              <MemberAvatar src="/aaditi.jpeg" initials="AD" />
             </div>
 
             <div className="space-y-1 z-10">
