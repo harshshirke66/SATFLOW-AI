@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { 
   Upload, Sparkles, AlertCircle, RefreshCw, Download, 
-  Settings, Cpu, FileImage, Play, CheckCircle, Layers, Activity
+  Settings, Cpu, FileImage, Play, CheckCircle, Layers, Activity,
+  Compass
 } from "lucide-react";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import FrameTimeline from "@/components/FrameTimeline";
@@ -32,6 +33,21 @@ interface MetricBenchmark {
   lpips: number;
 }
 
+interface TrajectoryPoint {
+  time: string;
+  x: number;
+  y: number;
+  type: string;
+}
+
+interface NowcastData {
+  speed_kmh: number;
+  heading_degrees: number;
+  heading_cardinal: string;
+  vorticity_index: number;
+  trajectory: TrajectoryPoint[];
+}
+
 interface GenerationResponse {
   success: boolean;
   inference_time_ms: number;
@@ -41,6 +57,7 @@ interface GenerationResponse {
     rife?: MetricBenchmark;
     optical_flow?: MetricBenchmark;
   };
+  nowcast?: NowcastData;
   frames: GeneratedFrame[];
 }
 
@@ -601,6 +618,91 @@ export default function DashboardPage() {
                       more cloud structural detail compared to traditional baseline warping.
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Meteorological Nowcast & Path Forecast */}
+              {result.nowcast && (
+                <div className="glass-panel p-5 rounded-2xl border border-white/5 grid grid-cols-1 md:grid-cols-12 gap-6 shadow-xl">
+                  
+                  {/* Left stats: nowcast indicators */}
+                  <div className="md:col-span-5 space-y-4">
+                    <h3 className="text-xs font-bold tracking-wider text-gray-400 uppercase flex items-center gap-2">
+                      <Compass className="h-4 w-4 text-accent-primary animate-spin" style={{ animationDuration: '8s' }} />
+                      <span>Storm Nowcasting Metrics</span>
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 gap-3">
+                      <div className="p-3 bg-[#05070B]/40 border border-white/5 rounded-xl flex items-center justify-between">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Estimated Core Speed</span>
+                          <span className="text-sm font-black text-white">{result.nowcast.speed_kmh} <span className="text-[10px] font-medium text-text-muted">km/h</span></span>
+                        </div>
+                        <span className="text-[8px] font-bold text-accent-primary bg-accent-primary/10 border border-accent-primary/20 px-2 py-0.5 rounded-full uppercase">Drift</span>
+                      </div>
+                      
+                      <div className="p-3 bg-[#05070B]/40 border border-white/5 rounded-xl flex items-center justify-between">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Heading Direction</span>
+                          <span className="text-sm font-black text-white">{result.nowcast.heading_cardinal} <span className="text-[10px] font-medium text-text-muted">({result.nowcast.heading_degrees}°)</span></span>
+                        </div>
+                        <span className="text-[8px] font-bold text-accent-secondary bg-accent-secondary/10 border border-accent-secondary/20 px-2 py-0.5 rounded-full uppercase">Vector</span>
+                      </div>
+
+                      <div className="p-3 bg-[#05070B]/40 border border-white/5 rounded-xl flex items-center justify-between">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Rotational Vorticity</span>
+                          <span className="text-sm font-black text-white">{result.nowcast.vorticity_index} <span className="text-[10px] font-medium text-text-muted">°/hr</span></span>
+                        </div>
+                        <span className="text-[8px] font-bold text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full uppercase">Spin</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Trajectory Coordinate table */}
+                  <div className="md:col-span-7 space-y-3">
+                    <h3 className="text-xs font-bold tracking-wider text-gray-400 uppercase">
+                      Forecasted Center Trajectory Track
+                    </h3>
+                    
+                    <div className="border border-white/5 rounded-xl overflow-hidden max-h-[175px] overflow-y-auto">
+                      <table className="w-full text-[10px] text-left border-collapse">
+                        <thead>
+                          <tr className="bg-[#05070B] border-b border-white/5 text-gray-400 font-bold uppercase tracking-wider">
+                            <th className="p-2 font-black">Temporal Coordinate</th>
+                            <th className="p-2 font-black">X Pos (Pixel)</th>
+                            <th className="p-2 font-black">Y Pos (Pixel)</th>
+                            <th className="p-2 font-black">Indicator</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5 font-mono text-white">
+                          {result.nowcast.trajectory.map((point: any, idx: number) => {
+                            const isObservation = point.type === "observation";
+                            const isForecast = point.type === "forecast";
+                            
+                            return (
+                              <tr key={idx} className="hover:bg-white/[0.02]">
+                                <td className="p-2 font-sans font-medium text-gray-300">{point.time}</td>
+                                <td className="p-2">{point.x}px</td>
+                                <td className="p-2">{point.y}px</td>
+                                <td className="p-2 font-sans">
+                                  <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border ${
+                                    isObservation 
+                                      ? "text-accent-secondary bg-accent-secondary/10 border-accent-secondary/20" 
+                                      : isForecast 
+                                        ? "text-status-warning bg-status-warning/10 border-status-warning/20 animate-pulse" 
+                                        : "text-accent-primary bg-accent-primary/10 border-accent-primary/20"
+                                  }`}>
+                                    {point.type}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
               )}
 
