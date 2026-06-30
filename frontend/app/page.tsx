@@ -98,10 +98,6 @@ export default function Home() {
           {/* Trusted Badges */}
           <motion.div variants={itemVariants} className="pt-8 border-t border-white/5 flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4 text-xs text-text-muted font-semibold">
             <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-green-400" />
-              <span>Production-Ready Fallbacks</span>
-            </div>
-            <div className="flex items-center gap-1.5">
               <Activity className="h-4 w-4 text-accent-primary" />
               <span>Real-time Flow Vectoring</span>
             </div>
