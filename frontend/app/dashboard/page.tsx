@@ -389,27 +389,23 @@ export default function DashboardPage() {
               </h2>
               <div className="space-y-1.5 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Inference Core:</span>
-                  <span className="text-white font-bold uppercase">{hwStatus.hardware.device_used}</span>
+                  <span className="text-gray-400">Inference Device:</span>
+                  <span className="text-white font-bold uppercase">{hwStatus.device}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">GPU Availability:</span>
-                  <span className={`font-bold ${hwStatus.hardware.gpu_available ? "text-isro-cyan" : "text-isro-orange"}`}>
-                    {hwStatus.hardware.gpu_available ? "Active" : "Unavailable (CPU Fallback)"}
+                  <span className="text-gray-400">Neural Engine:</span>
+                  <span className="text-isro-cyan font-bold">{hwStatus.engine}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Status:</span>
+                  <span className={`font-bold ${hwStatus.weights_loaded ? "text-green-400" : "text-isro-orange"}`}>
+                    {hwStatus.weights_loaded ? "✓ Loaded" : "Weight Missing"}
                   </span>
                 </div>
-                {hwStatus.hardware.gpu_available && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">GPU Device:</span>
-                    <span className="text-white font-medium max-w-[150px] truncate text-right">
-                      {hwStatus.hardware.gpu_device}
-                    </span>
-                  </div>
-                )}
                 <div className="flex justify-between border-t border-white/5 pt-1.5 mt-1.5">
-                  <span className="text-gray-400">RIFE Core Status:</span>
-                  <span className={`font-bold ${hwStatus.rife_model.available ? "text-isro-cyan" : "text-isro-orange"}`}>
-                    {hwStatus.rife_model.available ? "Weights Loaded" : "Weights Missing"}
+                  <span className="text-gray-400">Fallback:</span>
+                  <span className={`font-bold ${hwStatus.fallback ? "text-isro-orange" : "text-green-400"}`}>
+                    {hwStatus.fallback ? "Fallback Mode Enabled" : "Disabled"}
                   </span>
                 </div>
               </div>
@@ -494,11 +490,29 @@ export default function DashboardPage() {
 
                 {/* Info badge */}
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-bold text-gray-400">
-                    Model Used:{" "}
-                    <span className="text-white uppercase px-2 py-0.5 rounded bg-white/5 border border-white/10">
-                      {result?.model_used.replace("_fallback", " (Fallback)")}
-                    </span>
+                  <span className="text-xs font-bold text-gray-400 flex items-center gap-1.5">
+                    {result?.model_used === "rife" ? (
+                      <>
+                        <span>AI Engine:</span>
+                        <span className="text-green-400 font-bold px-2 py-0.5 rounded bg-green-500/10 border border-green-500/20">
+                          RIFE Neural Interpolation
+                        </span>
+                      </>
+                    ) : result?.model_used === "optical_flow_fallback" ? (
+                      <>
+                        <span>Engine:</span>
+                        <span className="text-isro-orange font-bold px-2 py-0.5 rounded bg-isro-orange/10 border border-isro-orange/20">
+                          Classical Optical Flow (Fallback Mode Enabled)
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Engine:</span>
+                        <span className="text-gray-300 font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10">
+                          Classical Optical Flow
+                        </span>
+                      </>
+                    )}
                   </span>
                   
                   <button

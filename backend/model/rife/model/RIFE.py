@@ -47,7 +47,8 @@ class Model:
             }
             
         if rank <= 0:
-            self.flownet.load_state_dict(convert(torch.load('{}/flownet.pkl'.format(path))))
+            device_str = "cuda" if torch.cuda.is_available() else "cpu"
+            self.flownet.load_state_dict(convert(torch.load('{}/flownet.pkl'.format(path), map_location=torch.device(device_str))))
         
     def save_model(self, path, rank=0):
         if rank == 0:

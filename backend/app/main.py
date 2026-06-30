@@ -4,9 +4,13 @@ from fastapi.staticfiles import StaticFiles
 from app.config import OUTPUT_DIR, APP_NAME
 from app.routes import generate, metrics, health
 from app.utils.sample_generator import generate_default_samples
+from app.services.rife_inference import load_rife_model
 
 # Generate default sample images if they are missing
 generate_default_samples()
+
+# Load pretrained RIFE model into memory
+load_rife_model()
 
 app = FastAPI(
     title=APP_NAME,
