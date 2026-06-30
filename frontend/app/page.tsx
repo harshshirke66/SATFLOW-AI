@@ -49,7 +49,7 @@ export default function Home() {
       <div className="noise-overlay" />
 
       {/* Hero Content */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 pt-36 pb-20 relative z-10 flex flex-col lg:flex-row items-center gap-16 min-h-[calc(100vh-80px)]">
+      <div className="max-w-7xl mx-auto px-6 sm:px-12 pt-28 pb-12 lg:pt-36 lg:pb-20 relative z-10 flex flex-col lg:flex-row items-center gap-10 lg:gap-16 min-h-[calc(100vh-80px)]">
         
         {/* Text Left Column */}
         <motion.div 
@@ -113,7 +113,7 @@ export default function Home() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="flex-1 w-full flex items-center justify-center relative aspect-square max-w-[500px]"
+          className="hidden lg:flex flex-1 w-full items-center justify-center relative aspect-square max-w-[500px]"
         >
           {/* Ambient Glow behind globe */}
           <div className="absolute inset-0 bg-accent-primary/5 rounded-full filter blur-3xl animate-pulse-slow" />
