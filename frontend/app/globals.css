@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
-@theme {
+:root {
+  --background: #05070B;
+  --foreground: #F8FAFC;
+
   --color-bg-primary: #05070B;
   --color-bg-secondary: #090D15;
   --color-surface-elevated: #101826;
@@ -37,11 +40,6 @@
 @keyframes pulse-glow-slow {
   0%, 100% { opacity: 0.15; filter: blur(40px); }
   50% { opacity: 0.25; filter: blur(60px); }
-}
-
-:root {
-  --background: #05070B;
-  --foreground: #F8FAFC;
 }
 
 body {
