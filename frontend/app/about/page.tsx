@@ -44,7 +44,7 @@ const MemberAvatar = ({ src, initials, isLeader }: AvatarProps) => {
       )}
 
       {/* Main avatar container */}
-      <div className={`h-24 w-24 rounded-full border flex items-center justify-center text-white text-xl font-black relative overflow-hidden transition-all duration-500 group-hover:scale-105 ${
+      <div className={`h-28 w-28 sm:h-32 sm:w-32 lg:h-36 lg:w-36 rounded-full border flex items-center justify-center text-white text-xl font-black relative overflow-hidden transition-all duration-500 group-hover:scale-105 ${
         isLeader 
           ? "border-accent-primary bg-[#101826] shadow-[0_0_20px_rgba(22,217,255,0.12)]" 
           : "border-white/10 bg-[#090D15]"
@@ -211,9 +211,6 @@ export default function AboutPage() {
             <div className="space-y-1 z-10">
               <span className="text-[8px] font-mono text-accent-primary font-bold uppercase tracking-wider">ROLE // AI LEAD</span>
               <h3 className="text-sm font-bold text-white group-hover:text-accent-primary transition-colors mt-0.5">Harsh Shirke</h3>
-              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2.5 border-t border-white/5 mt-2">
-                RIFE model optimization, PyTorch hardware execution cores, and pipeline flow controllers.
-              </p>
             </div>
           </div>
 
@@ -226,9 +223,6 @@ export default function AboutPage() {
             <div className="space-y-1 z-10">
               <span className="text-[8px] font-mono text-accent-secondary font-bold uppercase tracking-wider">ROLE // ARCHITECT</span>
               <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors mt-0.5">Devansh Pandey</h3>
-              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2.5 border-t border-white/5 mt-2">
-                FastAPI endpoints backend, Next.js 15 UI, dark glassmorphism styling, and state management.
-              </p>
             </div>
           </div>
 
@@ -241,9 +235,6 @@ export default function AboutPage() {
             <div className="space-y-1 z-10">
               <span className="text-[8px] font-mono text-accent-secondary font-bold uppercase tracking-wider">ROLE // CV RESEARCH</span>
               <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors mt-0.5">Deepa Choudhary</h3>
-              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2.5 border-t border-white/5 mt-2">
-                Farneback dense flow algorithms, heatmaps, vector visualization, and performance indices.
-              </p>
             </div>
           </div>
 
@@ -256,9 +247,6 @@ export default function AboutPage() {
             <div className="space-y-1 z-10">
               <span className="text-[8px] font-mono text-accent-secondary font-bold uppercase tracking-wider">ROLE // ANALYST</span>
               <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors mt-0.5">Aditi Deshmukh</h3>
-              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2.5 border-t border-white/5 mt-2">
-                INSAT satellite raw sensor ingestion, drift trajectories, and meteorological validations.
-              </p>
             </div>
           </div>
         </div>
