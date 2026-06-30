@@ -296,29 +296,24 @@ export default function AboutPage() {
         </motion.div>
       </div>
 
-      {/* Roadmap section (vertical track style) */}
-      <div className="space-y-8 relative z-10">
+      {/* Roadmap section (horizontal card grid) */}
+      <div className="space-y-6 relative z-10">
         <div className="pb-4 border-b border-white/5">
           <span className="text-[9px] font-black text-accent-primary tracking-widest uppercase">System Scalability</span>
-          <h2 className="text-sm font-black text-white uppercase tracking-wider mt-0.5">Future Roadmap & ISRO Integration</h2>
+          <h2 className="text-sm font-black text-white uppercase tracking-wider mt-0.5 font-bold">Future Roadmap & ISRO Integration</h2>
         </div>
 
-        <div className="relative pl-6 md:pl-8 space-y-8">
-          {/* Vertical connecting pipe */}
-          <div className="absolute left-[11px] md:left-[15px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-accent-primary via-accent-secondary to-white/5" />
-
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
           {/* Phase 1 */}
-          <div className="relative space-y-2 group">
-            {/* Timeline dot */}
-            <div className="absolute left-[5px] md:left-[9px] top-1.5 h-3.5 w-3.5 rounded-full bg-accent-primary border-2 border-bg-primary ring-4 ring-accent-primary/10 group-hover:scale-110 transition-transform" />
-            
-            <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="text-[8px] font-mono text-accent-primary font-bold uppercase tracking-wider border border-accent-primary/20 px-2 py-0.5 rounded bg-accent-primary/5">
-                  PHASE // 01
-                </span>
-                <h3 className="text-xs font-black uppercase tracking-wider text-white">Payload Fine-Tuning</h3>
-              </div>
+          <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-4 group hover:border-accent-primary/30 transition-all duration-300 relative overflow-hidden">
+            <div className="flex items-center justify-between border-b border-white/5 pb-3">
+              <span className="text-[9px] font-mono text-accent-primary font-bold uppercase tracking-wider">
+                PHASE // 01
+              </span>
+              <span className="text-2xl font-black text-accent-primary/20 group-hover:text-accent-primary/40 transition-colors font-mono">01</span>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xs font-black uppercase tracking-wider text-white">Payload Fine-Tuning</h3>
               <p className="text-xs text-text-muted leading-relaxed font-medium">
                 Integrate training logs directly with <strong>INSAT-3D/3DR</strong> thermal and water-vapor channel inputs. By fine-tuning the RIFE flow network on localized atmospheric coriolis movements, the model will learn to interpolate meteorological fluid dynamics rather than general pixel motions.
               </p>
@@ -326,17 +321,15 @@ export default function AboutPage() {
           </div>
 
           {/* Phase 2 */}
-          <div className="relative space-y-2 group">
-            {/* Timeline dot */}
-            <div className="absolute left-[5px] md:left-[9px] top-1.5 h-3.5 w-3.5 rounded-full bg-accent-secondary border-2 border-bg-primary ring-4 ring-accent-secondary/10 group-hover:scale-110 transition-transform" />
-            
-            <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="text-[8px] font-mono text-accent-secondary font-bold uppercase tracking-wider border border-accent-secondary/20 px-2 py-0.5 rounded bg-accent-secondary/5">
-                  PHASE // 02
-                </span>
-                <h3 className="text-xs font-black uppercase tracking-wider text-white">MOSDAC Infrastructure Integration</h3>
-              </div>
+          <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-4 group hover:border-accent-secondary/30 transition-all duration-300 relative overflow-hidden">
+            <div className="flex items-center justify-between border-b border-white/5 pb-3">
+              <span className="text-[9px] font-mono text-accent-secondary font-bold uppercase tracking-wider">
+                PHASE // 02
+              </span>
+              <span className="text-2xl font-black text-accent-secondary/20 group-hover:text-accent-secondary/40 transition-colors font-mono">02</span>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xs font-black uppercase tracking-wider text-white">MOSDAC Integration</h3>
               <p className="text-xs text-text-muted leading-relaxed font-medium">
                 Deploy as a containerized microservice on ISRO's <strong>MOSDAC</strong> (Meteorological & Oceanographic Satellite Data Archival Centre) or <strong>VEDAS</strong> platforms. Integration with active payload decoders allows real-time inference on incoming satellite feeds.
               </p>
@@ -344,17 +337,15 @@ export default function AboutPage() {
           </div>
 
           {/* Phase 3 */}
-          <div className="relative space-y-2 group">
-            {/* Timeline dot */}
-            <div className="absolute left-[5px] md:left-[9px] top-1.5 h-3.5 w-3.5 rounded-full bg-white/20 border-2 border-bg-primary ring-4 ring-white/5 group-hover:scale-110 transition-transform" />
-            
-            <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="text-[8px] font-mono text-gray-400 font-bold uppercase tracking-wider border border-white/10 px-2 py-0.5 rounded bg-white/5">
-                  PHASE // 03
-                </span>
-                <h3 className="text-xs font-black uppercase tracking-wider text-white">Sensor Fusion & Synchronization</h3>
-              </div>
+          <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-4 group hover:border-accent-primary/30 transition-all duration-300 relative overflow-hidden">
+            <div className="flex items-center justify-between border-b border-white/5 pb-3">
+              <span className="text-[9px] font-mono text-gray-400 font-bold uppercase tracking-wider">
+                PHASE // 03
+              </span>
+              <span className="text-2xl font-black text-white/10 group-hover:text-accent-primary/30 transition-colors font-mono">03</span>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xs font-black uppercase tracking-wider text-white">Sensor Fusion</h3>
               <p className="text-xs text-text-muted leading-relaxed font-medium">
                 Fuse observations from multiple satellites (e.g. Indian INSAT and Japanese Himawari-9) by aligning their coordinate maps and using RIFE's arbitrary timestep parameter to fill in the asynchronous gaps between their passes.
               </p>
