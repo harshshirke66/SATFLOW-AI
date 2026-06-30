@@ -1,0 +1,41 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+web_modules/
+
+# Next.js build outputs
+.next/
+out/
+build/
+dist/
+
+# Python cache & environment
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.toast
+.pytest_cache/
+
+# Large model weights (backend downloads automatically)
+backend/model/rife/train_log/*.pkl
+backend/model/rife/train_log/*.pth
+
+# Generated temporary outputs (ignore generated frames, keep directory structure)
+backend/outputs/*
+!backend/outputs/.gitkeep
+
+# System files
+.DS_Store
+Thumbs.db
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
