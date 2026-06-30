@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { 
   Waves, CloudLightning, Flame, Wind, Eye, 
-  Settings, Server, Calendar, AlertCircle
+  Settings, Server, Calendar, AlertCircle, Compass, Shield
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -17,21 +17,49 @@ const MemberAvatar = ({ src, initials, isLeader }: AvatarProps) => {
   const [hasError, setHasError] = React.useState(false);
   
   return (
-    <div className={`h-22 w-22 rounded-full border flex items-center justify-center text-white text-lg font-black relative overflow-hidden transition-all duration-300 group-hover:scale-105 ${
-      isLeader 
-        ? "border-accent-primary bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 shadow-[0_0_15px_rgba(22,217,255,0.25)]" 
-        : "border-white/10 bg-gradient-to-br from-white/5 to-white/10"
-    }`}>
-      {src && !hasError ? (
-        <img 
-          src={src} 
-          alt={initials} 
-          onError={() => setHasError(true)} 
-          className="absolute inset-0 object-cover w-full h-full grayscale filter group-hover:grayscale-0 transition-all duration-500 ease-out" 
-        />
-      ) : (
-        <span>{initials}</span>
+    <div className="relative group/avatar">
+      {/* Outer rotating dashed satellite HUD ring */}
+      <div 
+        className={`absolute -inset-3 rounded-full border border-dashed animate-spin pointer-events-none transition-colors duration-300 ${
+          isLeader 
+            ? "border-accent-primary/30 group-hover/avatar:border-accent-primary/60" 
+            : "border-white/10 group-hover/avatar:border-accent-secondary/40"
+        }`} 
+        style={{ animationDuration: "20s" }} 
+      />
+
+      {/* Radar sweeping dot */}
+      <div 
+        className={`absolute -inset-3 rounded-full pointer-events-none animate-spin ${
+          isLeader ? "text-accent-primary/40" : "text-accent-secondary/20"
+        }`}
+        style={{ animationDuration: "5s" }}
+      >
+        <div className="h-1 w-1 rounded-full bg-current absolute top-0 left-1/2 -translate-x-1/2" />
+      </div>
+
+      {/* Glow effect behind leader */}
+      {isLeader && (
+        <div className="absolute inset-0 rounded-full bg-accent-primary/10 blur-md group-hover/avatar:bg-accent-primary/20 transition-all duration-300" />
       )}
+
+      {/* Main avatar container */}
+      <div className={`h-24 w-24 rounded-full border flex items-center justify-center text-white text-xl font-black relative overflow-hidden transition-all duration-500 group-hover:scale-105 ${
+        isLeader 
+          ? "border-accent-primary bg-[#101826] shadow-[0_0_20px_rgba(22,217,255,0.12)]" 
+          : "border-white/10 bg-[#090D15]"
+      }`}>
+        {src && !hasError ? (
+          <img 
+            src={src} 
+            alt={initials} 
+            onError={() => setHasError(true)} 
+            className="absolute inset-0 object-cover w-full h-full grayscale filter group-hover:grayscale-0 transition-all duration-700 ease-out" 
+          />
+        ) : (
+          <span className="bg-gradient-to-br from-white to-gray-500 bg-clip-text text-transparent font-mono">{initials}</span>
+        )}
+      </div>
     </div>
   );
 };
@@ -42,31 +70,41 @@ export default function AboutPage() {
       title: "Cyclones & Hurricanes",
       icon: Wind,
       color: "#16D9FF",
-      description: "Severe tropical cyclones expand and rotate rapidly. High temporal resolution is critical to track the cyclone eye coordinates, evaluate central pressure dynamics, and forecast landfalls."
+      tag: "DYNAMICS // ROTATION",
+      description: "Severe tropical cyclones expand and rotate rapidly. High temporal resolution is critical to track the cyclone eye coordinates, evaluate central pressure dynamics, and forecast landfalls.",
+      layout: "md:col-span-2"
     },
     {
       title: "Floods & Surges",
       icon: Waves,
       color: "#4F8CFF",
-      description: "River spills and flash flood surges expand over minutes. AI frame interpolation helps disaster managers visualize continuous flow fronts and map inundation speeds."
+      tag: "FLUIDS // INUNDATION",
+      description: "River spills and flash flood surges expand over minutes. AI frame interpolation helps disaster managers visualize continuous flow fronts and map inundation speeds.",
+      layout: "md:col-span-1"
     },
     {
       title: "Thunderstorms & Fronts",
       icon: CloudLightning,
       color: "#16D9FF",
-      description: "Convective storms form and discharge rapidly. Super-resolving the timeline between geostationary observations enables early warnings for severe lightning and convective drafts."
-    },
-    {
-      title: "Wildfires & Plumes",
-      icon: Flame,
-      color: "#4F8CFF",
-      description: "Wildfires spread continuously along thermal vectors. Tracking smoke plumes and predicting flame front drift requires dense temporal tracking to guide aerial suppression."
+      tag: "ATMOSPHERE // CONVECTIVE",
+      description: "Convective storms form and discharge rapidly. Super-resolving the timeline between geostationary observations enables early warnings for severe lightning and convective drafts.",
+      layout: "md:col-span-1"
     },
     {
       title: "Cloud Layer Tracking",
       icon: Eye,
       color: "#16D9FF",
-      description: "Tracking convective cloud clusters allows meteorologists to estimate upper-level winds, identify wind shear patterns, and improve numerical weather prediction (NWP) model feeds."
+      tag: "VECTORS // WIND SHEAR",
+      description: "Tracking convective cloud clusters allows meteorologists to estimate upper-level winds, identify wind shear patterns, and improve numerical weather prediction (NWP) model feeds.",
+      layout: "md:col-span-2"
+    },
+    {
+      title: "Wildfires & Plumes",
+      icon: Flame,
+      color: "#4F8CFF",
+      tag: "THERMAL // SMOKE DRIFT",
+      description: "Wildfires spread continuously along thermal vectors. Tracking smoke plumes and predicting flame front drift requires dense temporal tracking to guide aerial suppression.",
+      layout: "md:col-span-3"
     }
   ];
 
@@ -88,106 +126,137 @@ export default function AboutPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-bg-primary text-text-primary overflow-hidden tech-grid-bg radial-spotlight pt-28 pb-20 px-6 sm:px-12 max-w-7xl mx-auto">
+    <div className="relative min-h-screen bg-bg-primary text-text-primary overflow-hidden tech-grid-bg radial-spotlight pt-28 pb-20 px-6 sm:px-12 max-w-7xl mx-auto select-text">
       <div className="noise-overlay" />
       
       {/* Page Header */}
-      <div className="pb-6 border-b border-white/5 mb-8">
-        <h1 className="text-2xl font-black tracking-tight text-white uppercase">About SATFLOW AI</h1>
-        <p className="text-xs text-text-muted mt-1 leading-relaxed font-medium">
-          Understanding the meteorological and computational foundation of temporal super-resolution.
+      <div className="pb-6 border-b border-white/5 mb-12 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 relative z-10">
+        <div>
+          <span className="text-[9px] font-bold text-accent-primary tracking-widest uppercase">System Specifications</span>
+          <h1 className="text-2xl font-black tracking-tight text-white uppercase mt-0.5">About SATFLOW AI</h1>
+        </div>
+        <p className="text-xs text-text-muted max-w-md font-medium leading-relaxed">
+          Understanding the meteorological and computational foundations of software-defined temporal super-resolution.
         </p>
       </div>
 
       {/* Hero Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-16 relative z-10">
-        <div className="lg:col-span-7 space-y-4">
-          <h2 className="text-xs font-black tracking-widest text-accent-primary uppercase">The Problem Statement</h2>
-          <p className="text-xs text-text-muted leading-relaxed font-medium">
-            Geostationary satellites like INSAT-3D capture meteorological scans at intervals ranging from 15 to 30 minutes, while polar-orbiting satellites pass only once or twice a day. In the intervals between these scans, severe atmospheric events—such as rapid cyclonic rotation, lightning discharge, flash flooding, and wildfire spread—develop dynamically.
-          </p>
-          <p className="text-xs text-text-muted leading-relaxed font-medium">
-            Launching additional physical satellites into orbit to increase temporal resolution is economically and logistically prohibitive. <strong>SATFLOW AI solves this by using AI-driven optical flow warping to synthesize highly realistic intermediate observation frames.</strong> This software-defined temporal resolution increase fills the data gaps, helping disaster mitigation agencies make timely decisions.
-          </p>
-        </div>
-        <div className="lg:col-span-5 bg-[#101826]/40 border border-white/5 p-6 rounded-2xl space-y-4 relative overflow-hidden">
-          <div className="absolute inset-0 bg-accent-primary/[0.01] pointer-events-none" />
-          <div className="flex items-center gap-2.5">
-            <AlertCircle className="h-4 w-4 text-accent-primary" />
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Disaster Evacuation Metric</span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-16 relative z-10">
+        {/* Left Column */}
+        <div className="lg:col-span-7 space-y-4 flex flex-col justify-between">
+          <div className="space-y-4">
+            <span className="text-[9px] font-black tracking-widest text-accent-primary uppercase border border-accent-primary/20 px-2 py-0.5 rounded bg-accent-primary/5">
+              Problem Statement
+            </span>
+            <h2 className="text-lg font-black text-white uppercase tracking-tight">Meteorological Observation Gaps</h2>
+            <p className="text-xs text-text-muted leading-relaxed font-medium">
+              Geostationary satellites like INSAT-3D capture meteorological scans at intervals ranging from 15 to 30 minutes, while polar-orbiting satellites pass only once or twice a day. In the intervals between these scans, severe atmospheric events—such as rapid cyclonic rotation, lightning discharge, flash flooding, and wildfire spread—develop dynamically.
+            </p>
+            <p className="text-xs text-text-muted leading-relaxed font-medium">
+              Launching additional physical satellites into orbit to increase temporal resolution is economically and logistically prohibitive. <strong>SATFLOW AI solves this by using AI-driven optical flow warping to synthesize highly realistic intermediate observation frames.</strong> This software-defined temporal resolution increase fills the data gaps, helping disaster mitigation agencies make timely decisions.
+            </p>
           </div>
-          <blockquote className="text-xs text-white italic border-l border-accent-primary pl-4 leading-relaxed font-medium">
-            "A 15-minute gap in monitoring a category-5 cyclone can mean the difference between a successful coastal evacuation and a disaster. Software temporal super-resolution is the bridge to continuous observation."
-          </blockquote>
-          <div className="text-[9px] text-gray-500 font-bold tracking-wider uppercase text-right">
-            — ISRO Meteorological Wing (Simulation Study)
+        </div>
+
+        {/* Right Column: Fake telemetry terminal mockup */}
+        <div className="lg:col-span-5 bg-[#090D15]/60 border border-white/5 p-6 rounded-2xl flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute top-0 right-0 h-28 w-28 bg-accent-primary/5 rounded-full blur-2xl pointer-events-none" />
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b border-white/5 pb-3">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-accent-primary" />
+                <span className="text-[9px] font-mono font-bold text-white uppercase tracking-wider">Telemetry Warning Log</span>
+              </div>
+              <span className="text-[8px] font-mono text-gray-500">FEED_SEC_3D</span>
+            </div>
+            
+            <blockquote className="text-xs text-white italic border-l-2 border-accent-primary pl-4 leading-relaxed font-medium font-sans">
+              "A 15-minute gap in monitoring a category-5 cyclone can mean the difference between a successful coastal evacuation and a disaster. Software temporal super-resolution is the bridge to continuous observation."
+            </blockquote>
+          </div>
+
+          <div className="border-t border-white/5 pt-4 mt-6 flex justify-between items-center text-[9px] text-gray-500 font-mono">
+            <span>MET_UNIT_SIMULATION</span>
+            <span>— ISRO METEOROLOGICAL STUDY</span>
           </div>
         </div>
       </div>
 
-      {/* Team Section (Repositioned Below Hero) */}
-      <div className="space-y-6 relative z-10 mb-16">
-        <div className="pb-4 border-b border-white/5">
-          <h2 className="text-sm font-black text-white uppercase tracking-wider font-bold">The ByteBots Team</h2>
-          <p className="text-xs text-text-muted mt-1 leading-relaxed font-medium">
-            The computer vision engineers and data researchers behind the development of SATFLOW AI.
-          </p>
+      {/* Team Section (Handcrafted radar elements) */}
+      <div className="space-y-6 relative z-10 mb-20">
+        <div className="pb-4 border-b border-white/5 flex items-center justify-between">
+          <div>
+            <span className="text-[9px] font-black text-accent-primary tracking-widest uppercase">Research Team</span>
+            <h2 className="text-sm font-black text-white uppercase tracking-wider mt-0.5">Team ByteBots</h2>
+          </div>
+          <span className="text-[8px] font-mono text-gray-500 uppercase tracking-widest hidden sm:inline-block">
+            Project Codename // SATFLOW
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
           {/* Harsh Shirke (Leader) */}
-          <div className="glass-panel p-6 rounded-2xl border-accent-primary/20 shadow-[0_0_15px_rgba(22,217,255,0.03)] flex flex-col items-center text-center gap-4 group hover:border-accent-primary/50 transition-all duration-300 relative overflow-hidden">
-            <div className="absolute top-2.5 right-2.5">
+          <div className="glass-panel p-6 rounded-3xl border-accent-primary/20 shadow-[0_0_20px_rgba(22,217,255,0.02)] flex flex-col items-center text-center gap-5 group hover:border-accent-primary/50 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute top-3 right-3 z-10">
               <span className="text-[8px] font-black text-accent-primary bg-accent-primary/10 border border-accent-primary/20 px-2 py-0.5 rounded-full uppercase">
                 Leader
               </span>
             </div>
             
-            <MemberAvatar src="/harsh photo.png" initials="HS" isLeader={true} />
+            <div className="mt-2">
+              <MemberAvatar src="/harsh photo.png" initials="HS" isLeader={true} />
+            </div>
 
-            <div className="space-y-1">
-              <h3 className="text-sm font-bold text-white group-hover:text-accent-primary transition-colors">Harsh Shirke</h3>
-              <p className="text-[10px] text-accent-primary font-bold uppercase tracking-wider">Team Leader & AI Lead</p>
-              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2 border-t border-white/5 mt-2">
+            <div className="space-y-1 z-10">
+              <span className="text-[8px] font-mono text-accent-primary font-bold uppercase tracking-wider">ROLE // AI LEAD</span>
+              <h3 className="text-sm font-bold text-white group-hover:text-accent-primary transition-colors mt-0.5">Harsh Shirke</h3>
+              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2.5 border-t border-white/5 mt-2">
                 RIFE model optimization, PyTorch hardware execution cores, and pipeline flow controllers.
               </p>
             </div>
           </div>
 
           {/* Devansh Pandey */}
-          <div className="glass-panel p-6 rounded-2xl border border-white/5 flex flex-col items-center text-center gap-4 group hover:border-accent-secondary/30 transition-all duration-300 relative">
-            <MemberAvatar src="/team/devansh.jpg" initials="DP" />
+          <div className="glass-panel p-6 rounded-3xl border-white/5 flex flex-col items-center text-center gap-5 group hover:border-accent-secondary/40 transition-all duration-300 relative overflow-hidden">
+            <div className="mt-2">
+              <MemberAvatar src="/team/devansh.jpg" initials="DP" />
+            </div>
 
-            <div className="space-y-1">
-              <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors">Devansh Pandey</h3>
-              <p className="text-[10px] text-accent-secondary font-bold uppercase tracking-wider">Full-Stack Architect</p>
-              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2 border-t border-white/5 mt-2">
+            <div className="space-y-1 z-10">
+              <span className="text-[8px] font-mono text-accent-secondary font-bold uppercase tracking-wider">ROLE // ARCHITECT</span>
+              <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors mt-0.5">Devansh Pandey</h3>
+              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2.5 border-t border-white/5 mt-2">
                 FastAPI endpoints backend, Next.js 15 UI, dark glassmorphism styling, and state management.
               </p>
             </div>
           </div>
 
           {/* Deepa Choudhary */}
-          <div className="glass-panel p-6 rounded-2xl border border-white/5 flex flex-col items-center text-center gap-4 group hover:border-accent-secondary/30 transition-all duration-300 relative">
-            <MemberAvatar src="/team/deepa.jpg" initials="DC" />
+          <div className="glass-panel p-6 rounded-3xl border-white/5 flex flex-col items-center text-center gap-5 group hover:border-accent-secondary/40 transition-all duration-300 relative overflow-hidden">
+            <div className="mt-2">
+              <MemberAvatar src="/team/deepa.jpg" initials="DC" />
+            </div>
 
-            <div className="space-y-1">
-              <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors">Deepa Choudhary</h3>
-              <p className="text-[10px] text-accent-secondary font-bold uppercase tracking-wider">Computer Vision Lead</p>
-              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2 border-t border-white/5 mt-2">
+            <div className="space-y-1 z-10">
+              <span className="text-[8px] font-mono text-accent-secondary font-bold uppercase tracking-wider">ROLE // CV RESEARCH</span>
+              <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors mt-0.5">Deepa Choudhary</h3>
+              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2.5 border-t border-white/5 mt-2">
                 Farneback dense flow algorithms, heatmaps, vector visualization, and performance indices.
               </p>
             </div>
           </div>
 
           {/* Aditi Deshmukh */}
-          <div className="glass-panel p-6 rounded-2xl border border-white/5 flex flex-col items-center text-center gap-4 group hover:border-accent-secondary/30 transition-all duration-300 relative">
-            <MemberAvatar src="/team/aditi.jpg" initials="AD" />
+          <div className="glass-panel p-6 rounded-3xl border-white/5 flex flex-col items-center text-center gap-5 group hover:border-accent-secondary/40 transition-all duration-300 relative overflow-hidden">
+            <div className="mt-2">
+              <MemberAvatar src="/team/aditi.jpg" initials="AD" />
+            </div>
 
-            <div className="space-y-1">
-              <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors">Aditi Deshmukh</h3>
-              <p className="text-[10px] text-accent-secondary font-bold uppercase tracking-wider">Data Operations Analyst</p>
-              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2 border-t border-white/5 mt-2">
+            <div className="space-y-1 z-10">
+              <span className="text-[8px] font-mono text-accent-secondary font-bold uppercase tracking-wider">ROLE // ANALYST</span>
+              <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors mt-0.5">Aditi Deshmukh</h3>
+              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-2.5 border-t border-white/5 mt-2">
                 INSAT satellite raw sensor ingestion, drift trajectories, and meteorological validations.
               </p>
             </div>
@@ -195,20 +264,18 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* Atmospheric Hazards Section */}
-      <div className="space-y-6 mb-16 relative z-10">
+      {/* Bento Grid Hazards Section */}
+      <div className="space-y-6 mb-20 relative z-10">
         <div className="pb-4 border-b border-white/5">
-          <h2 className="text-sm font-black text-white uppercase tracking-wider">Disaster Management Applications</h2>
-          <p className="text-xs text-text-muted mt-1 leading-relaxed font-medium">
-            How SATFLOW AI enhances tracking capabilities across different meteorological hazards:
-          </p>
+          <span className="text-[9px] font-black text-accent-primary tracking-widest uppercase">Target Application Areas</span>
+          <h2 className="text-sm font-black text-white uppercase tracking-wider mt-0.5">Disaster Management Fields</h2>
         </div>
 
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           {hazards.map((hazard, index) => {
             const Icon = hazard.icon;
@@ -216,19 +283,23 @@ export default function AboutPage() {
               <motion.div 
                 key={index}
                 variants={cardVariants}
-                className="glass-panel p-6 rounded-2xl border border-white/5 hover:border-accent-primary/20 transition-all duration-300 flex flex-col gap-4"
+                className={`glass-panel p-6 rounded-3xl border border-white/5 hover:border-accent-primary/20 transition-all duration-300 flex flex-col justify-between gap-5 relative overflow-hidden group ${hazard.layout}`}
               >
-                <div 
-                  className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0"
-                  style={{ 
-                    backgroundColor: `${hazard.color}15`,
-                    color: hazard.color
-                  }}
-                >
-                  <Icon className="h-4.5 w-4.5" />
+                <div className="flex justify-between items-start">
+                  <div 
+                    className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ 
+                      backgroundColor: `${hazard.color}15`,
+                      color: hazard.color
+                    }}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="text-[8px] font-mono text-gray-500 font-bold tracking-widest">{hazard.tag}</span>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-white tracking-tight">{hazard.title}</h3>
+                
+                <div className="space-y-1.5 mt-4">
+                  <h3 className="text-sm font-bold text-white tracking-tight group-hover:text-accent-primary transition-colors">{hazard.title}</h3>
                   <p className="text-xs text-text-muted leading-relaxed font-medium">{hazard.description}</p>
                 </div>
               </motion.div>
@@ -237,47 +308,69 @@ export default function AboutPage() {
         </motion.div>
       </div>
 
-      {/* Future Scope Section */}
-      <div className="space-y-6 relative z-10">
+      {/* Roadmap section (vertical track style) */}
+      <div className="space-y-8 relative z-10">
         <div className="pb-4 border-b border-white/5">
-          <h2 className="text-sm font-black text-white uppercase tracking-wider font-bold">Future Roadmap & ISRO Integration</h2>
-          <p className="text-xs text-text-muted mt-1 leading-relaxed font-medium">
-            The modular architecture of SATFLOW AI is engineered to scale from hackathon demonstration to real-world national security pipelines:
-          </p>
+          <span className="text-[9px] font-black text-accent-primary tracking-widest uppercase">System Scalability</span>
+          <h2 className="text-sm font-black text-white uppercase tracking-wider mt-0.5">Future Roadmap & ISRO Integration</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Roadmap 1 */}
-          <div className="glass-panel p-6 rounded-2xl border border-white/5 space-y-3">
-            <div className="flex items-center gap-2 text-accent-primary">
-              <Settings className="h-4 w-4" />
-              <h3 className="text-xs font-black uppercase tracking-wider text-white">Payload Fine-Tuning</h3>
+        <div className="relative pl-6 md:pl-8 space-y-8">
+          {/* Vertical connecting pipe */}
+          <div className="absolute left-2.5 md:left-3.5 top-2 bottom-2 w-0.5 bg-gradient-to-b from-accent-primary via-accent-secondary to-white/5" />
+
+          {/* Phase 1 */}
+          <div className="relative space-y-2 group">
+            {/* Timeline dot */}
+            <div className="absolute -left-6 md:-left-8 top-1 h-3 w-3 rounded-full bg-accent-primary border-2 border-bg-primary ring-4 ring-accent-primary/10 group-hover:scale-110 transition-transform" />
+            
+            <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-[8px] font-mono text-accent-primary font-bold uppercase tracking-wider border border-accent-primary/20 px-2 py-0.5 rounded bg-accent-primary/5">
+                  PHASE // 01
+                </span>
+                <h3 className="text-xs font-black uppercase tracking-wider text-white">Payload Fine-Tuning</h3>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed font-medium">
+                Integrate training logs directly with <strong>INSAT-3D/3DR</strong> thermal and water-vapor channel inputs. By fine-tuning the RIFE flow network on localized atmospheric coriolis movements, the model will learn to interpolate meteorological fluid dynamics rather than general pixel motions.
+              </p>
             </div>
-            <p className="text-xs text-text-muted leading-relaxed font-medium">
-              Integrate training logs directly with <strong>INSAT-3D/3DR</strong> thermal and water-vapor channel inputs. By fine-tuning the RIFE flow network on localized atmospheric coriolis movements, the model will learn to interpolate meteorological fluid dynamics rather than general pixel motions.
-            </p>
           </div>
 
-          {/* Roadmap 2 */}
-          <div className="glass-panel p-6 rounded-2xl border border-white/5 space-y-3">
-            <div className="flex items-center gap-2 text-accent-secondary">
-              <Server className="h-4 w-4" />
-              <h3 className="text-xs font-black uppercase tracking-wider text-white">MOSDAC Integration</h3>
+          {/* Phase 2 */}
+          <div className="relative space-y-2 group">
+            {/* Timeline dot */}
+            <div className="absolute -left-6 md:-left-8 top-1 h-3 w-3 rounded-full bg-accent-secondary border-2 border-bg-primary ring-4 ring-accent-secondary/10 group-hover:scale-110 transition-transform" />
+            
+            <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-[8px] font-mono text-accent-secondary font-bold uppercase tracking-wider border border-accent-secondary/20 px-2 py-0.5 rounded bg-accent-secondary/5">
+                  PHASE // 02
+                </span>
+                <h3 className="text-xs font-black uppercase tracking-wider text-white">MOSDAC Infrastructure Integration</h3>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed font-medium">
+                Deploy as a containerized microservice on ISRO's <strong>MOSDAC</strong> (Meteorological & Oceanographic Satellite Data Archival Centre) or <strong>VEDAS</strong> platforms. Integration with active payload decoders allows real-time inference on incoming satellite feeds.
+              </p>
             </div>
-            <p className="text-xs text-text-muted leading-relaxed font-medium">
-              Deploy as a containerized microservice on ISRO's <strong>MOSDAC</strong> (Meteorological & Oceanographic Satellite Data Archival Centre) or <strong>VEDAS</strong> platforms. Integration with active payload decoders allows real-time inference on incoming satellite feeds.
-            </p>
           </div>
 
-          {/* Roadmap 3 */}
-          <div className="glass-panel p-6 rounded-2xl border border-white/5 space-y-3">
-            <div className="flex items-center gap-2 text-accent-primary">
-              <Calendar className="h-4 w-4" />
-              <h3 className="text-xs font-black uppercase tracking-wider text-white">Sensor Fusion</h3>
+          {/* Phase 3 */}
+          <div className="relative space-y-2 group">
+            {/* Timeline dot */}
+            <div className="absolute -left-6 md:-left-8 top-1 h-3 w-3 rounded-full bg-white/20 border-2 border-bg-primary ring-4 ring-white/5 group-hover:scale-110 transition-transform" />
+            
+            <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-[8px] font-mono text-gray-400 font-bold uppercase tracking-wider border border-white/10 px-2 py-0.5 rounded bg-white/5">
+                  PHASE // 03
+                </span>
+                <h3 className="text-xs font-black uppercase tracking-wider text-white">Sensor Fusion & Synchronization</h3>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed font-medium">
+                Fuse observations from multiple satellites (e.g. Indian INSAT and Japanese Himawari-9) by aligning their coordinate maps and using RIFE's arbitrary timestep parameter to fill in the asynchronous gaps between their passes.
+              </p>
             </div>
-            <p className="text-xs text-text-muted leading-relaxed font-medium">
-              Fuse observations from multiple satellites (e.g. Indian INSAT and Japanese Himawari-9) by aligning their coordinate maps and using RIFE's arbitrary timestep parameter to fill in the asynchronous gaps between their passes.
-            </p>
           </div>
         </div>
       </div>
