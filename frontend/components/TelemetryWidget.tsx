@@ -8,9 +8,11 @@ export default function TelemetryWidget() {
   const [status, setStatus] = useState<any>(null);
   const [isOnline, setIsOnline] = useState(false);
 
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
   useEffect(() => {
     const checkStatus = () => {
-      fetch("http://localhost:8000/health")
+      fetch(`${baseUrl}/health`)
         .then((res) => {
           if (res.ok) {
             setIsOnline(true);
@@ -30,7 +32,7 @@ export default function TelemetryWidget() {
     checkStatus();
     const interval = setInterval(checkStatus, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [baseUrl]);
 
   return (
     <div className="fixed bottom-6 left-6 z-50 pointer-events-auto select-none font-mono">
@@ -65,9 +67,9 @@ export default function TelemetryWidget() {
                 {isOnline && status?.model?.available ? "RIFE v3 (Neural)" : "Farneback (Classical)"}
               </span>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center gap-2">
               <span>API ENDPOINT:</span>
-              <span className="text-gray-500 text-[8px]">127.0.0.1:8000</span>
+              <span className="text-gray-500 text-[8px] truncate max-w-[125px]">{baseUrl.replace("https://", "").replace("http://", "")}</span>
             </div>
           </div>
         </div>
