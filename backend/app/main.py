@@ -49,7 +49,7 @@ def read_root():
     # Render glowing status color indicator
     status_dot_class = "bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.6)]" if status["available"] else "bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.6)]"
     
-    html_content = f"""
+    html_content = """
     <!DOCTYPE html>
     <html>
     <head>
@@ -59,20 +59,20 @@ def read_root():
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
-            body {{
+            body {
                 font-family: 'JetBrains Mono', monospace;
                 background-color: #05070B;
                 background-image: 
                     radial-gradient(circle at 50% 0%, rgba(22, 217, 255, 0.06) 0%, transparent 60%),
                     radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0);
                 background-size: 100% 100%, 32px 32px;
-            }}
+            }
         </style>
     </head>
     <body class="min-h-screen text-gray-300 flex flex-col justify-between p-6 md:p-12 select-none">
         <div></div>
         
-        {/* Main Console Box */}
+        <!-- Main Console Box -->
         <div class="w-full max-w-4xl mx-auto border border-white/10 rounded-2xl bg-[#090D15]/80 backdrop-blur-md shadow-2xl overflow-hidden flex flex-col">
             
             {/* Console Header */}
@@ -89,7 +89,7 @@ def read_root():
                 </div>
                 
                 <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full {status_dot_class} animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full __STATUS_DOT_CLASS__ animate-pulse"></span>
                     <span class="text-[9px] font-black text-white uppercase tracking-widest">Active Status</span>
                 </div>
             </div>
@@ -102,9 +102,9 @@ def read_root():
                     </span>
                     <div class="text-[11px] space-y-2">
                         <div class="flex justify-between"><span class="text-gray-500">Framework:</span><span class="text-white font-bold">FastAPI / Uvicorn</span></div>
-                        <div class="flex justify-between"><span class="text-gray-500">Runtime Hardware:</span><span class="text-white font-bold">{device_name}</span></div>
-                        <div class="flex justify-between"><span class="text-gray-500">Active Engine:</span><span class="text-[#16D9FF] font-bold">{engine_name}</span></div>
-                        <div class="flex justify-between"><span class="text-gray-500">Weights Status:</span><span class="text-white">{weights_msg}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Runtime Hardware:</span><span class="text-white font-bold">__DEVICE_NAME__</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Active Engine:</span><span class="text-[#16D9FF] font-bold">__ENGINE_NAME__</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Weights Status:</span><span class="text-white">__WEIGHTS_MSG__</span></div>
                     </div>
                 </div>
 
@@ -127,7 +127,7 @@ def read_root():
                 <div class="text-gray-500">[09:30:16] Scanning for RIFE pre-trained checkpoints...</div>
                 <div>[09:30:16] Weight file flownet.pkl found (146.4 MB)</div>
                 <div class="text-emerald-400">[09:30:17] Pre-loading RIFE HDv3 network into memory...</div>
-                <div class="text-emerald-400">[09:30:19] Model loaded successfully on device: {device_name}</div>
+                <div class="text-emerald-400">[09:30:19] Model loaded successfully on device: __DEVICE_NAME__</div>
                 <div>[09:30:19] Uvicorn worker running at http://127.0.0.1:8000</div>
                 <div class="text-[#16D9FF]">[10:14:02] POST /generate - Ingested 2 frames, interpolated 3 steps (RIFE v3)</div>
                 <div class="text-[#4F8CFF]">[10:14:03] GET /health - Status OK - Engine: RIFE</div>
@@ -140,10 +140,16 @@ def read_root():
         <div class="text-center text-[9px] text-gray-600 mt-6 tracking-widest font-black uppercase">
             SATFLOW AI • ISRO BHARATIYA ANTARIKSH HACKATHON
         </div>
-        
     </body>
     </html>
     """
+    
+    # Inject active variables safely
+    html_content = html_content.replace("__STATUS_DOT_CLASS__", status_dot_class)
+    html_content = html_content.replace("__DEVICE_NAME__", device_name)
+    html_content = html_content.replace("__ENGINE_NAME__", engine_name)
+    html_content = html_content.replace("__WEIGHTS_MSG__", weights_msg)
+    
     return html_content
 
 @app.get("/docs", include_in_schema=False)
