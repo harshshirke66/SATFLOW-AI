@@ -1,9 +1,6 @@
 @import "tailwindcss";
 
-:root {
-  --background: #05070B;
-  --foreground: #F8FAFC;
-
+@theme {
   --color-bg-primary: #05070B;
   --color-bg-secondary: #090D15;
   --color-surface-elevated: #101826;
@@ -25,6 +22,11 @@
   --animate-orbit-fast: orbit 30s linear infinite;
   --animate-float: float 8s ease-in-out infinite;
   --animate-pulse-slow: pulse-glow-slow 4s ease-in-out infinite;
+}
+
+:root {
+  --background: #05070B;
+  --foreground: #F8FAFC;
 }
 
 @keyframes orbit {
