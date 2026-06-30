@@ -1,122 +1,315 @@
-# 🛰️ SATFLOW AI – Satellite Temporal Super-Resolution
+<div align="center">
 
-**SATFLOW AI** is a production-grade software platform designed to enhance the temporal resolution of satellite imagery using deep learning and dense optical flow estimation. The project solves the ISRO Bharatiya Antariksh Hackathon challenge of synthesizing intermediate satellite frames between consecutive geostationary passes (like INSAT-3D/3DR), enabling disaster mitigation agencies to continuously monitor rapid, volatile weather events without launching expensive physical payloads.
+# 🛰️ SATFLOW AI
 
-> [!IMPORTANT]
-> **Hackathon Team**: ByteBots
-> * **Team Leader & AI Lead**: Harsh Shirke
-> * **Architect**: Devansh Pandey
-> * **Computer Vision Research**: Deepa Choudhary
-> * **Meteorological Analyst**: Aditi Deshmukh
+### Synthesizing Time Itself Between Satellite Passes
 
----
+**AI-powered temporal super-resolution for geostationary satellite imagery — turning sparse 30-minute INSAT-3D/3DR passes into a continuous, real-time weather feed.**
 
-## 🎨 Premium Handcrafted UI Features
+[![Built for](https://img.shields.io/badge/Built%20for-Bhartiya%20Antariksh%20Hackathon-FF6B00?style=for-the-badge&logo=isro&logoColor=white)](#)
+[![Team](https://img.shields.io/badge/Team-ByteBots-7C3AED?style=for-the-badge)](#-the-team)
+[![Status](https://img.shields.io/badge/Status-Active%20Development-22C55E?style=for-the-badge)](#)
 
-The user interface has been designed from scratch to feel like a high-end mission control console, adopting the latest visual patterns used by Stripe, Linear, and Vercel.
+[![Next.js](https://img.shields.io/badge/Next.js%2015-000000?style=flat-square&logo=next.js&logoColor=white)](#)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)](#)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)](#)
+[![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=flat-square&logo=opencv&logoColor=white)](#)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](#)
+[![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](#)
 
-*   **📺 Solid Pitch-Black Canvas**: The entire app background is synchronized to a uniform `#000000` pitch-black canvas, overlaying subtle tech-grid grids and fine-grain film noise to make glowing glassmorphic elements pop with maximum contrast.
-*   **📡 Orbit Telemetry Status Widget**: A custom floating client-side widget in the bottom-left corner that replicates the official SATFLOW orbiting logo. It polls `GET /health` in the background, displaying real-time API connectivity, GPU CUDA availability, and the active interpolation engine.
-*   **🍱 Asymmetric Bento Grid**: The target hazard areas (Cyclones, Floods, Convective Storms, Cloud Layers, and Wildfires) are arranged in an organic Bento Grid layout with responsive card sizing and monospace metadata labels.
-*   **👥 Radar HUD Team Avatars**: The About page displays the ByteBots team cards with grayscale-to-color hover transitions and a slowly rotating outer dashed HUD tracking ring simulating satellite radar sweep lines.
-*   **🗺️ Numbered Step Roadmap**: Features a 3-column numbered card layout (`01`, `02`, `03`) mapping our implementation and deployment pipeline with ISRO.
+<br/>
 
----
+```
+╔═══════════════════════════════════════════════════════════════╗
+║   FRAME(t₀) ──────────[ DENSE OPTICAL FLOW ]──────────► ?      ║
+║       ▼                                                  ▼     ║
+║   ░░░░░░░░         RIFE Neural Interpolation        ░░░░░░░░   ║
+║   ░ CLOUD ░  ───►   t = 0.2 · 0.4 · 0.6 · 0.8  ───►  ░ CLOUD ░ ║
+║   ░░░░░░░░         Synthetic Intermediate Frames     ░░░░░░░░   ║
+║       ▲                                                  ▲     ║
+║   FRAME(t₁) ◄─────── 30 MIN GAP → 6 MIN GAP ─────────────┘     ║
+╚═══════════════════════════════════════════════════════════════╝
+```
 
-## 🛠️ Key Technical Features
+</div>
 
-1.  **AI Frame Interpolation**: Implements the pre-trained **RIFE (Real-Time Intermediate Flow Estimation)** model architecture with arbitrary temporal steps ($t \in (0, 1)$) to generate 1, 3, or 5 intermediate observation frames.
-2.  **Robust Classical Fallback**: Incorporates a **Farneback Dense Optical Flow warping baseline** that executes automatically if RIFE weights are missing or if CUDA resources are unavailable.
-3.  **Motion Vector Overlays**: Computes dense flow vectors and overlays motion arrows displaying cloud velocities and storm spin direction.
-4.  **Change Intensity Heatmaps**: Generates differential visual heatmaps using colormaps to highlight changing cyclone centers, expanding flood zones, and fire plume expansions.
-5.  **Interactive Workstation**: Includes a drag-to-compare swipe slider (Before/After), zoom controls ($1\times$ to $3\times$), timeline scrubbing playback, and live quality metric benchmarks (PSNR / SSIM).
+<br/>
 
----
+## 📡 The Problem
+
+Geostationary satellites like **INSAT-3D/3DR** image the same patch of Earth roughly every **30 minutes**. For slow-moving phenomena that's plenty — but **cyclones, flash floods, convective storm cells, and wildfire plumes** can change dramatically in a fraction of that window. Agencies are left choosing between expensive new payloads or watching disasters unfold in 30-minute jumps.
+
+**SATFLOW AI closes that gap computationally.** Instead of launching more satellites, we use deep-learning frame interpolation to *synthesize* the missing moments in between — turning a stuttering slideshow into a smooth, near-continuous monitoring feed.
+
+<br/>
+
+## 🧭 Table of Contents
+
+| | | |
+|---|---|---|
+| [✨ Features](#-key-features) | [🏗️ Architecture](#️-system-architecture) | [🎨 UI Philosophy](#-design-philosophy) |
+| [🧰 Tech Stack](#-tech-stack) | [📂 Project Structure](#-project-structure) | [⚙️ Setup](#️-installation--setup) |
+| [🔌 API Reference](#-api-reference) | [📊 Benchmarks](#-quality-benchmarks) | [👥 Team](#-the-team) |
+| [🚀 Deployment](#-production-deployment) | [🗺️ Roadmap](#️-roadmap) | [📜 License](#-license) |
+
+<br/>
+
+## ✨ Key Features
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+### 🧠 AI Frame Interpolation
+Pre-trained **RIFE** (Real-Time Intermediate Flow Estimation) generates 1, 3, or 5 physically-plausible intermediate frames at arbitrary timesteps `t ∈ (0,1)` — no hand-tuned heuristics, just learned motion.
+
+</td>
+<td width="33%" valign="top">
+
+### 🛟 Classical Fallback
+A **Farneback dense optical-flow** warping engine kicks in automatically the moment RIFE weights are missing or CUDA isn't available — the pipeline never goes dark.
+
+</td>
+<td width="33%" valign="top">
+
+### 🎯 Motion Vector Overlays
+Dense flow fields are rendered as directional arrows, surfacing **cloud velocity** and **storm rotation** at a glance.
+
+</td>
+</tr>
+<tr>
+<td width="33%" valign="top">
+
+### 🔥 Change Intensity Heatmaps
+Differential colormaps highlight **shifting cyclone eyes**, **expanding flood boundaries**, and **growing fire plumes** between frames.
+
+</td>
+<td width="33%" valign="top">
+
+### 🖥️ Interactive Workstation
+Drag-to-compare before/after slider, 1×–3× zoom, scrubbable timeline playback, and live **PSNR / SSIM** quality readouts.
+
+</td>
+<td width="33%" valign="top">
+
+### 📊 Quantified Trust
+Every synthesized frame ships with objective fidelity metrics, so analysts know exactly how much to trust what they're seeing.
+
+</td>
+</tr>
+</table>
+
+<br/>
+
+## 🎨 Design Philosophy
+
+> *Mission control, not a dashboard template.*
+
+The frontend is handcrafted to feel like a live satellite ops console — drawing visual language from Stripe, Linear, and Vercel rather than generic admin-panel kits.
+
+| Element | Detail |
+|---|---|
+| 🖤 **Canvas** | Uniform `#000000` pitch-black base, layered with a faint tech-grid and film-grain noise so glassmorphic panels glow with maximum contrast |
+| 📡 **Telemetry Widget** | Floating bottom-left HUD polling `GET /health` live — shows API connectivity, GPU/CUDA status, and the active interpolation engine in real time |
+| 🍱 **Asymmetric Bento Grid** | Hazard categories (Cyclones, Floods, Convective Storms, Cloud Layers, Wildfires) laid out as organic, responsive bento cards with monospace metadata |
+| 👥 **Radar HUD Avatars** | Team cards animate grayscale → color on hover, ringed by a slowly rotating dashed HUD ring simulating a radar sweep |
+| 🗺️ **Numbered Roadmap** | A 3-column `01 · 02 · 03` pipeline walkthrough of the implementation and ISRO deployment path |
+
+<br/>
+
+## 🏗️ System Architecture
+
+```mermaid
+flowchart LR
+    A["🛰️ INSAT-3D/3DR<br/>Frame A (t₀)"] --> C{Pipeline Router}
+    B["🛰️ INSAT-3D/3DR<br/>Frame B (t₁)"] --> C
+
+    C -->|GPU available| D["🧠 RIFE Model<br/>Neural Interpolation"]
+    C -->|GPU unavailable| E["🛟 Farneback Optical Flow<br/>Classical Fallback"]
+
+    D --> F["🎞️ Synthesized<br/>Intermediate Frames"]
+    E --> F
+
+    F --> G["🔥 Heatmap Engine"]
+    F --> H["🎯 Motion Vector Overlay"]
+    F --> I["📊 PSNR / SSIM Scorer"]
+
+    G --> J(["🖥️ Next.js Workstation UI"])
+    H --> J
+    I --> J
+
+    style A fill:#0a0a0a,stroke:#22c55e,color:#fff
+    style B fill:#0a0a0a,stroke:#22c55e,color:#fff
+    style D fill:#1a1a2e,stroke:#7c3aed,color:#fff
+    style E fill:#1a1a2e,stroke:#f59e0b,color:#fff
+    style J fill:#0a0a0a,stroke:#3b82f6,color:#fff
+```
+
+<br/>
+
+## 🧰 Tech Stack
+
+<table>
+<tr><th>Layer</th><th>Technology</th></tr>
+<tr><td><b>Frontend</b></td><td>Next.js 15 (App Router), TypeScript, Tailwind CSS</td></tr>
+<tr><td><b>Backend</b></td><td>FastAPI, Python 3.9–3.11, Uvicorn</td></tr>
+<tr><td><b>AI / CV Engine</b></td><td>PyTorch, RIFE (ECCV 2022), OpenCV (Farneback flow), NumPy, Pillow</td></tr>
+<tr><td><b>Hosting</b></td><td>Vercel (frontend) · Render (FastAPI service) · AWS EC2 / RunPod (GPU inference)</td></tr>
+</table>
+
+<br/>
 
 ## 📂 Project Structure
+
+<details>
+<summary><b>Click to expand full repository tree</b></summary>
 
 ```
 satflow-ai/
 │
-├── DEPLOYMENT.md           # Step-by-step production hosting guide (Vercel & Render)
-├── README.md               # Main repository documentation
+├── DEPLOYMENT.md              # Step-by-step production hosting guide (Vercel & Render)
+├── README.md                  # You are here
 │
 ├── frontend/
-│   ├── app/                # Next.js 15 App router (landing, dashboard, architecture, about)
-│   ├── components/         # Reusable React components (Globe, Slider, Timeline, TelemetryWidget)
-│   ├── public/             # Static frontend assets (Team photos, favicons)
+│   ├── app/                   # Next.js 15 App Router (landing, dashboard, architecture, about)
+│   ├── components/            # Globe, Compare Slider, Timeline, Telemetry Widget
+│   ├── public/                # Static assets (team photos, favicons)
 │   ├── package.json
 │   ├── tsconfig.json
-│   └── tailwind.config.ts  # Tailwind CSS config
+│   └── tailwind.config.ts
 │
 ├── backend/
 │   ├── app/
-│   │   ├── main.py         # FastAPI app initializer & CORS config
-│   │   ├── config.py       # Path management & default configurations
-│   │   ├── routes/         # Endpoint definitions (generate, metrics, health)
-│   │   ├── services/       # Core engines (rife_inference, optical_flow, metrics, heatmap)
-│   │   └── utils/          # Auxiliary files (image_loader, preprocessing, file_handler)
+│   │   ├── main.py            # FastAPI initializer & CORS config
+│   │   ├── config.py          # Path management & defaults
+│   │   ├── routes/            # generate / metrics / health endpoints
+│   │   ├── services/          # rife_inference, optical_flow, metrics, heatmap
+│   │   └── utils/             # image_loader, preprocessing, file_handler
 │   ├── model/
-│   │   └── rife/           # Cloned ECCV2022-RIFE model repository
-│   ├── outputs/            # Static static-mounted directory for rendered images
-│   ├── sample_data/        # Generated synthetic cyclone frames (cloud_A & cloud_B)
-│   ├── requirements.txt    # Python library dependencies
-│   ├── run.py              # Server run entrypoint
-│   └── test_backend.py     # Independent backend validation suite
+│   │   └── rife/               # ECCV2022-RIFE model repository
+│   ├── outputs/                # Static-mounted rendered output directory
+│   ├── sample_data/             # Synthetic cyclone frame pairs (cloud_A / cloud_B)
+│   ├── requirements.txt
+│   ├── run.py                  # Server entrypoint
+│   └── test_backend.py         # Independent validation suite
 ```
 
----
+</details>
 
-## ⚙️ Installation & Setup Guide
+<br/>
 
-### 1. Prerequisites
-*   **Python**: v3.9 to v3.11 recommended.
-*   **Node.js**: v18.0 or newer.
-*   **Git**: Installed and configured.
+## ⚙️ Installation & Setup
 
-### 2. Backend Setup
-1. Navigate to the `backend/` folder:
-   ```bash
-   cd backend
-   ```
-2. Install required packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-   *Note: Requirements include `fastapi`, `uvicorn`, `opencv-python`, `torch`, `torchvision`, `numpy`, and `pillow`.*
-3. **Model Checkpoint (flownet.pkl)**:
-   The backend automatically downloads the compatible RIFE model weights on startup if they are missing from `model/rife/train_log/flownet.pkl`.
-4. Test the backend services:
-   ```bash
-   python test_backend.py
-   ```
-   All test cases should return `[OK]`.
-5. Run the FastAPI development server:
-   ```bash
-   python run.py
-   ```
-   The backend API will run on `http://localhost:8000`. You can inspect the OpenAPI docs at `http://localhost:8000/docs`.
+### Prerequisites
 
-### 3. Frontend Setup
-1. Navigate to the `frontend/` folder:
-   ```bash
-   cd ../frontend
-   ```
-2. Install Node packages:
-   ```bash
-   npm install
-   ```
-3. Run the Next.js development server:
-   ```bash
-   npm run dev
-   ```
-   The user interface will be active on `http://localhost:3000`.
+| Requirement | Version |
+|---|---|
+| 🐍 Python | 3.9 – 3.11 |
+| 🟩 Node.js | 18.0+ |
+| 🔧 Git | Latest |
 
----
+### 1️⃣ Backend
 
-## 🔗 Production Deployment
+```bash
+cd backend
+pip install -r requirements.txt
+```
 
-To host this application in a live production environment, see our detailed **[Deployment Guide (DEPLOYMENT.md)](file:///d:/ISRO%20HACKATHON/DEPLOYMENT.md)**. It covers:
-*   Setting up **Vercel** for Next.js.
-*   Deploying the **FastAPI** web service on **Render** (CPU fallback).
-*   Configuring GPU nodes (AWS EC2 / RunPod) for full CUDA acceleration.
+> RIFE weights (`flownet.pkl`) auto-download to `model/rife/train_log/` on first run if missing.
+
+```bash
+python test_backend.py   # all cases should print [OK]
+python run.py             # → http://localhost:8000  (docs at /docs)
+```
+
+### 2️⃣ Frontend
+
+```bash
+cd ../frontend
+npm install
+npm run dev               # → http://localhost:3000
+```
+
+<br/>
+
+## 🔌 API Reference
+
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/health` | `GET` | API connectivity, GPU/CUDA status, active engine |
+| `/generate` | `POST` | Submit frame pair → returns interpolated intermediate frames |
+| `/metrics` | `GET` | PSNR / SSIM quality scores for the last generation |
+
+Full interactive OpenAPI docs are available at **`http://localhost:8000/docs`** once the backend is running.
+
+<br/>
+
+## 📊 Quality Benchmarks
+
+| Metric | What it measures | Target |
+|---|---|---|
+| **SSIM** | Structural similarity between synthesized and ground-truth frames | `> 0.90` |
+| **PSNR** | Pixel-level reconstruction fidelity (dB) | `> 30 dB` |
+| **Inference Latency** | Time per interpolated frame (GPU) | `< 200ms` |
+
+<br/>
+
+## 🗺️ Roadmap
+
+<table>
+<tr>
+<td align="center" width="33%">
+
+### `01`
+**Core Engine**
+RIFE + Farneback dual-pipeline, FastAPI service, baseline accuracy validation
+
+</td>
+<td align="center" width="33%">
+
+### `02`
+**Mission Console**
+Bento dashboard, telemetry widget, motion overlays, heatmap generation
+
+</td>
+<td align="center" width="33%">
+
+### `03`
+**ISRO Integration**
+Live INSAT-3D/3DR data ingestion, GPU autoscaling, disaster-agency API access
+
+</td>
+</tr>
+</table>
+
+<br/>
+
+## 👥 The Team — **ByteBots**
+
+<table>
+<tr><th>Name</th><th>Role</th></tr>
+<tr><td><b>Harsh Shirke</b></td><td>Team Leader & AI Lead</td></tr>
+<tr><td><b>Devansh Pandey</b></td><td>Architect</td></tr>
+<tr><td><b>Deepa Choudhary</b></td><td>Computer Vision Research</td></tr>
+<tr><td><b>Aditi Deshmukh</b></td><td>Meteorological Analyst</td></tr>
+</table>
+
+<br/>
+
+## 🚀 Production Deployment
+
+Full hosting walkthrough — Vercel for the frontend, FastAPI on Render (CPU fallback), and GPU node configuration on AWS EC2 / RunPod for CUDA acceleration — lives in **[`DEPLOYMENT.md`](./DEPLOYMENT.md)**.
+
+<br/>
+
+## 📜 License
+
+Built for the **Bhartiya Antariksh Hackathon**, in service of disaster mitigation agencies monitoring India's skies. Licensing details TBD by the ByteBots team.
+
+<br/>
+
+<div align="center">
+
+**Made with 🛰️, ☕, and way too many optical flow papers — Team ByteBots**
+
+</div>
