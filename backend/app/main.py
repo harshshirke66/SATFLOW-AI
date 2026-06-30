@@ -75,7 +75,7 @@ def read_root():
         <!-- Main Console Box -->
         <div class="w-full max-w-4xl mx-auto border border-white/10 rounded-2xl bg-[#090D15]/80 backdrop-blur-md shadow-2xl overflow-hidden flex flex-col">
             
-            {/* Console Header */}
+        <!-- Console Header -->
             <div class="bg-[#05070B] border-b border-white/10 px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="flex gap-1.5">
@@ -94,7 +94,7 @@ def read_root():
                 </div>
             </div>
             
-            {/* Console Diagnostics Grid */}
+            <!-- Console Diagnostics Grid -->
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-white/10 bg-[#090D15]/40">
                 <div class="space-y-3.5">
                     <span class="text-[9px] text-[#16D9FF] font-black uppercase tracking-wider block border-b border-white/5 pb-1">
@@ -121,7 +121,7 @@ def read_root():
                 </div>
             </div>
             
-            {/* Simulated Live Console Log */}
+            <!-- Simulated Live Console Log -->
             <div class="p-6 bg-[#05070B] font-mono text-[10px] text-gray-400 space-y-1.5 overflow-x-auto min-h-[220px]">
                 <div class="text-gray-500">[09:30:15] Initialize SATFLOW-AI inference modules...</div>
                 <div class="text-gray-500">[09:30:16] Scanning for RIFE pre-trained checkpoints...</div>
@@ -136,7 +136,7 @@ def read_root():
             
         </div>
         
-        {/* Footer info */}
+        <!-- Footer info -->
         <div class="text-center text-[9px] text-gray-600 mt-6 tracking-widest font-black uppercase">
             SATFLOW AI • ISRO BHARATIYA ANTARIKSH HACKATHON
         </div>
