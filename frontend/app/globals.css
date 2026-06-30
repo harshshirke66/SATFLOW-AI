@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-primary: #05070B;
-  --color-bg-secondary: #090D15;
-  --color-surface-elevated: #101826;
-  --color-surface-glass: rgba(18, 28, 45, 0.45);
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #05070B;
+  --color-surface-elevated: #0B0E14;
+  --color-surface-glass: rgba(10, 15, 25, 0.65);
   
   --color-accent-primary: #16D9FF;
   --color-accent-secondary: #4F8CFF;
-  --color-glow-soft: rgba(22, 217, 255, 0.12);
-  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-glow-soft: rgba(22, 217, 255, 0.05);
+  --color-border-subtle: rgba(255, 255, 255, 0.12);
   
   --color-text-muted: #94A3B8;
   --color-text-primary: #F8FAFC;
@@ -108,11 +108,11 @@ body {
 
 /* Soft Radial Light */
 .radial-spotlight {
-  background: radial-gradient(circle at 50% -20%, rgba(22, 217, 255, 0.08) 0%, transparent 65%);
+  background: none !important;
 }
 
 .radial-ambient {
-  background: radial-gradient(circle at 10% 30%, rgba(79, 140, 255, 0.03) 0%, transparent 50%);
+  background: none !important;
 }
 
 /* Fine-grain noise overlay */
