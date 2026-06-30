@@ -22,6 +22,7 @@ async def generate_frames(
     """
     Generates N intermediate satellite frames between frameA and frameB.
     Computes optical flow vectors and heatmaps for each frame step.
+    Performs A/B benchmarking between Neural RIFE and Classical Farneback flow.
     """
     start_time = time.time()
     
@@ -45,22 +46,37 @@ async def generate_frames(
         if img_b.shape != img_a.shape:
             img_b = cv2.resize(img_b, (w, h))
             
-        # 2. Run Interpolation
+        # 2. Run Interpolations for A/B scientific benchmarking
+        flow_frames = None
+        rife_frames = None
+        
+        # We always run the fast Farneback baseline first for comparative benchmarks
+        print(f"[Generate] Running Classical Farneback Optical Flow benchmark...")
+        flow_frames = classical_flow_interpolate(img_a, img_b, number_of_frames)
+        
+        # Check if RIFE is loaded and active
+        from app.services.rife_inference import get_model_status
+        rife_status = get_model_status()
+        
+        if rife_status["available"]:
+            try:
+                print(f"[Generate] Running Neural RIFE v3 interpolation...")
+                rife_frames = rife_interpolate(img_a, img_b, number_of_frames)
+            except Exception as e:
+                print(f"[Generate] Neural RIFE run failed: {e}. Falling back to baseline benchmarks.")
+        
+        # Select active sequence based on user choice
         generated_frames = []
         model_used = model_type
         
-        if model_type == "rife":
-            try:
-                print(f"[Generate] Attempting RIFE interpolation for {number_of_frames} frames...")
-                generated_frames = rife_interpolate(img_a, img_b, number_of_frames)
-                model_used = "rife"
-            except Exception as e:
-                print(f"[Generate] RIFE interpolation failed: {e}. Falling back to Classical Optical Flow...")
-                generated_frames = classical_flow_interpolate(img_a, img_b, number_of_frames)
-                model_used = "optical_flow_fallback"
+        if model_type == "rife" and rife_frames is not None:
+            generated_frames = rife_frames
+            model_used = "rife"
+        elif model_type == "rife":
+            generated_frames = flow_frames
+            model_used = "optical_flow_fallback"
         else:
-            print(f"[Generate] Running Classical Farneback Optical Flow interpolation for {number_of_frames} frames...")
-            generated_frames = classical_flow_interpolate(img_a, img_b, number_of_frames)
+            generated_frames = flow_frames
             model_used = "optical_flow"
             
         # 3. Assemble complete timeline: [Frame A, Inter1, Inter2, ..., Frame B]
@@ -68,13 +84,9 @@ async def generate_frames(
         num_total_frames = len(full_sequence)
         
         # 4. Generate visual outputs and save files
-        # We assign a session ID to group these frames
         session_id = str(uuid.uuid4())[:8]
-        
         response_frames = []
         
-        # Base time interval labels (e.g. 10:00 -> 10:05 -> 10:10)
-        # We step 5 minutes per frame
         for i, frame in enumerate(full_sequence):
             frame_idx = i
             is_ai = (i > 0 and i < num_total_frames - 1)
@@ -87,12 +99,11 @@ async def generate_frames(
             frame_filename = f"{session_id}_frame_{frame_idx}.png"
             image_url = save_output_image(frame, frame_filename)
             
-            # Compute optical flow to the NEXT frame (for the last frame, wrap back or copy previous)
+            # Compute optical flow to the NEXT frame
             flow_vis_filename = f"{session_id}_flow_{frame_idx}.png"
             if i < num_total_frames - 1:
                 flow_vis = draw_optical_flow_vectors(frame, full_sequence[i + 1], step=24)
             else:
-                # Last frame flow points backward or is zeroed
                 flow_vis = draw_optical_flow_vectors(full_sequence[i - 1], frame, step=24)
             flow_url = save_output_image(flow_vis, flow_vis_filename)
             
@@ -113,19 +124,38 @@ async def generate_frames(
                 "heatmap_url": heatmap_url
             })
             
-        # 5. Compute metrics (between Frame A and Frame B as comparison, and middle generated frame)
-        # Linear cross-fade blend of A and B as a simple baseline reference
+        # 5. Compute metrics
         middle_idx = num_total_frames // 2
         middle_gen = full_sequence[middle_idx]
         
-        linear_blend = cv2.addWeighted(img_a, 0.5, img_b, 0.5, 0.0)
-        
-        # Calculate how much better RIFE/Flow is compared to simple blending (vs Ground Truth, or simply reporting characteristics)
-        # Let's compare the generated frame against Frame A and Frame B
         psnr_val = calculate_psnr(img_a, middle_gen)
         ssim_val = calculate_ssim(img_a, middle_gen)
         lpips_val = estimate_lpips(ssim_val)
         
+        # Generate A/B benchmark statistics
+        comparison_data = {}
+        if flow_frames is not None:
+            flow_seq = [img_a] + flow_frames + [img_b]
+            flow_mid = flow_seq[len(flow_seq) // 2]
+            flow_psnr = calculate_psnr(img_a, flow_mid)
+            flow_ssim = calculate_ssim(img_a, flow_mid)
+            comparison_data["optical_flow"] = {
+                "psnr": round(flow_psnr, 2),
+                "ssim": round(flow_ssim, 4),
+                "lpips": estimate_lpips(flow_ssim)
+            }
+            
+        if rife_frames is not None:
+            rife_seq = [img_a] + rife_frames + [img_b]
+            rife_mid = rife_seq[len(rife_seq) // 2]
+            rife_psnr = calculate_psnr(img_a, rife_mid)
+            rife_ssim = calculate_ssim(img_a, rife_mid)
+            comparison_data["rife"] = {
+                "psnr": round(rife_psnr, 2),
+                "ssim": round(rife_ssim, 4),
+                "lpips": estimate_lpips(rife_ssim)
+            }
+            
         inference_time_ms = round((time.time() - start_time) * 1000, 2)
         
         return {
@@ -138,6 +168,7 @@ async def generate_frames(
                 "lpips": lpips_val,
                 "frames_generated": number_of_frames
             },
+            "comparison": comparison_data,
             "frames": response_frames
         }
         
