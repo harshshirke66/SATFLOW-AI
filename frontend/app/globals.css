@@ -72,10 +72,19 @@ body {
   background: rgba(15, 20, 32, 0.55);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   box-shadow: 
     0 4px 30px rgba(0, 0, 0, 0.4),
-    inset 0 1px 1px rgba(255, 255, 255, 0.03);
+    inset 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Global Border Visibility Overrides for Premium Contrast */
+.border-white\/5 {
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+.border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.18) !important;
 }
 
 /* Active Highlight Glass */
