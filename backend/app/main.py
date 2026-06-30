@@ -8,11 +8,18 @@ from app.routes import generate, metrics, health
 from app.utils.sample_generator import generate_default_samples
 from app.services.rife_inference import load_rife_model, get_model_status
 
+import os
+
 # Generate default sample images if they are missing
 generate_default_samples()
 
-# Load pretrained RIFE model into memory
-load_rife_model()
+# Skip RIFE pre-loading on Render Free Tier to avoid 512MB OOM (Out-of-Memory) crash
+IS_RENDER = os.environ.get("RENDER") == "true"
+if not IS_RENDER:
+    # Load pretrained RIFE model into memory
+    load_rife_model()
+else:
+    print("[Render] Running in resource-constrained environment. Skipping RIFE pre-loading to prevent Out-Of-Memory (OOM) crash.")
 
 app = FastAPI(
     title=APP_NAME,
