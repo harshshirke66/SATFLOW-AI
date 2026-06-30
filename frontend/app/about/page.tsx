@@ -143,7 +143,7 @@ export default function AboutPage() {
               </span>
             </div>
             
-            <MemberAvatar src="/team/harsh.jpg" initials="HS" isLeader={true} />
+            <MemberAvatar src="/harsh photo.png" initials="HS" isLeader={true} />
 
             <div className="space-y-1">
               <h3 className="text-sm font-bold text-white group-hover:text-accent-primary transition-colors">Harsh Shirke</h3>
