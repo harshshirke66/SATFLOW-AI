@@ -8,7 +8,8 @@ export default function TelemetryWidget() {
   const [status, setStatus] = useState<any>(null);
   const [isOnline, setIsOnline] = useState(false);
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  const baseUrl = rawBaseUrl.endsWith("/") ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
 
   useEffect(() => {
     const checkStatus = () => {
