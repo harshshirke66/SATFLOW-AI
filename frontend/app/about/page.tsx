@@ -305,12 +305,12 @@ export default function AboutPage() {
 
         <div className="relative pl-6 md:pl-8 space-y-8">
           {/* Vertical connecting pipe */}
-          <div className="absolute left-2.5 md:left-3.5 top-2 bottom-2 w-0.5 bg-gradient-to-b from-accent-primary via-accent-secondary to-white/5" />
+          <div className="absolute left-[11px] md:left-[15px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-accent-primary via-accent-secondary to-white/5" />
 
           {/* Phase 1 */}
           <div className="relative space-y-2 group">
             {/* Timeline dot */}
-            <div className="absolute -left-6 md:-left-8 top-1 h-3 w-3 rounded-full bg-accent-primary border-2 border-bg-primary ring-4 ring-accent-primary/10 group-hover:scale-110 transition-transform" />
+            <div className="absolute left-[5px] md:left-[9px] top-1.5 h-3.5 w-3.5 rounded-full bg-accent-primary border-2 border-bg-primary ring-4 ring-accent-primary/10 group-hover:scale-110 transition-transform" />
             
             <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-3">
               <div className="flex flex-wrap items-center gap-3">
@@ -328,7 +328,7 @@ export default function AboutPage() {
           {/* Phase 2 */}
           <div className="relative space-y-2 group">
             {/* Timeline dot */}
-            <div className="absolute -left-6 md:-left-8 top-1 h-3 w-3 rounded-full bg-accent-secondary border-2 border-bg-primary ring-4 ring-accent-secondary/10 group-hover:scale-110 transition-transform" />
+            <div className="absolute left-[5px] md:left-[9px] top-1.5 h-3.5 w-3.5 rounded-full bg-accent-secondary border-2 border-bg-primary ring-4 ring-accent-secondary/10 group-hover:scale-110 transition-transform" />
             
             <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-3">
               <div className="flex flex-wrap items-center gap-3">
@@ -346,7 +346,7 @@ export default function AboutPage() {
           {/* Phase 3 */}
           <div className="relative space-y-2 group">
             {/* Timeline dot */}
-            <div className="absolute -left-6 md:-left-8 top-1 h-3 w-3 rounded-full bg-white/20 border-2 border-bg-primary ring-4 ring-white/5 group-hover:scale-110 transition-transform" />
+            <div className="absolute left-[5px] md:left-[9px] top-1.5 h-3.5 w-3.5 rounded-full bg-white/20 border-2 border-bg-primary ring-4 ring-white/5 group-hover:scale-110 transition-transform" />
             
             <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-3">
               <div className="flex flex-wrap items-center gap-3">
