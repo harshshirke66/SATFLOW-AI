@@ -123,7 +123,7 @@ export default function Globe() {
           ? Math.max(0.1, 0.45 * (1 - rz / radius)) 
           : Math.max(0.02, 0.15 * (1 - rz / radius));
 
-        ctx.fillStyle = isFront ? `rgba(0, 242, 254, ${opacity})` : `rgba(0, 102, 255, ${opacity})`;
+        ctx.fillStyle = isFront ? `rgba(22, 217, 255, ${opacity})` : `rgba(79, 140, 255, ${opacity})`;
         
         ctx.beginPath();
         // Dot size based on perspective scale
@@ -145,8 +145,8 @@ export default function Globe() {
 
       // Glowing core of the satellite
       ctx.shadowBlur = 15;
-      ctx.shadowColor = "#ff9933";
-      ctx.fillStyle = "#ff9933";
+      ctx.shadowColor = "#16D9FF";
+      ctx.fillStyle = "#16D9FF";
       ctx.beginPath();
       ctx.arc(scx, scy, 5, 0, 2 * Math.PI);
       ctx.fill();
@@ -155,7 +155,7 @@ export default function Globe() {
       ctx.shadowBlur = 0;
 
       // Draw satellite panel lines (small solar wings)
-      ctx.strokeStyle = "#00f2fe";
+      ctx.strokeStyle = "#4F8CFF";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(scx - 8, scy);

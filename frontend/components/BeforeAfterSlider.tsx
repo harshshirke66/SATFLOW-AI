@@ -29,8 +29,13 @@ export default function BeforeAfterSlider({
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = clientX - rect.left;
-    const position = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderPosition(position);
+    let position = (x / rect.width) * 100;
+    
+    // Magnetic snapping at boundaries
+    if (position < 2) position = 0;
+    if (position > 98) position = 100;
+    
+    setSliderPosition(Math.max(0, Math.min(100, position)));
   };
 
   const handleTouchMove = (e: TouchEvent) => {
@@ -104,8 +109,8 @@ export default function BeforeAfterSlider({
   return (
     <div 
       ref={containerRef}
-      className={`relative select-none overflow-hidden rounded-xl border border-white/10 bg-space-deep flex flex-col items-center ${
-        isFullscreen ? "w-screen h-screen rounded-none z-50 p-4" : "w-full aspect-video max-h-[500px]"
+      className={`relative select-none overflow-hidden rounded-2xl border border-white/5 bg-[#05070B] flex flex-col items-center shadow-2xl transition-all duration-300 ${
+        isFullscreen ? "w-screen h-screen rounded-none z-50 p-6 bg-[#05070B]" : "w-full aspect-video max-h-[520px]"
       }`}
     >
       {/* Viewer Area */}
@@ -113,7 +118,7 @@ export default function BeforeAfterSlider({
         
         {/* Right Image (Background) */}
         <div 
-          className="absolute inset-0 w-full h-full transition-transform duration-200"
+          className="absolute inset-0 w-full h-full transition-transform duration-300 ease-out"
           style={{ transform: `scale(${zoom})`, transformOrigin: "center" }}
         >
           <img 
@@ -121,14 +126,14 @@ export default function BeforeAfterSlider({
             alt="Right side" 
             className="w-full h-full object-contain pointer-events-none"
           />
-          <span className="absolute bottom-4 right-4 bg-space-deep/80 text-isro-cyan text-xs font-semibold px-2.5 py-1 rounded-md border border-isro-cyan/20 backdrop-blur-sm">
+          <span className="absolute bottom-4 right-4 bg-[#05070B]/85 text-accent-primary text-[10px] tracking-wider uppercase font-bold px-3 py-1.5 rounded-lg border border-accent-primary/20 backdrop-blur-md shadow-lg">
             {rightLabel}
           </span>
         </div>
 
         {/* Left Image (Foreground with Clip) */}
         <div 
-          className="absolute inset-0 w-full h-full overflow-hidden transition-transform duration-200"
+          className="absolute inset-0 w-full h-full overflow-hidden transition-transform duration-300 ease-out"
           style={{ 
             clipPath: `polygon(0 0, ${sliderPosition}% 0, ${sliderPosition}% 100%, 0 100%)`,
             transform: `scale(${zoom})`,
@@ -140,7 +145,7 @@ export default function BeforeAfterSlider({
             alt="Left side" 
             className="w-full h-full object-contain pointer-events-none"
           />
-          <span className="absolute bottom-4 left-4 bg-space-deep/80 text-isro-orange text-xs font-semibold px-2.5 py-1 rounded-md border border-isro-orange/20 backdrop-blur-sm">
+          <span className="absolute bottom-4 left-4 bg-[#05070B]/85 text-accent-secondary text-[10px] tracking-wider uppercase font-bold px-3 py-1.5 rounded-lg border border-accent-secondary/20 backdrop-blur-md shadow-lg">
             {leftLabel}
           </span>
         </div>
@@ -148,39 +153,42 @@ export default function BeforeAfterSlider({
         {/* Divider Slider line */}
         <div 
           ref={sliderRef}
-          className="absolute top-0 bottom-0 w-0.5 bg-isro-cyan cursor-ew-resize flex items-center justify-center"
+          className="absolute top-0 bottom-0 w-[1px] bg-accent-primary/40 hover:bg-accent-primary cursor-ew-resize flex items-center justify-center transition-colors"
           style={{ left: `${sliderPosition}%` }}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
         >
-          {/* Handle button */}
-          <div className="absolute h-9 w-9 rounded-full bg-space-deep border-2 border-isro-cyan flex items-center justify-center shadow-lg shadow-isro-cyan/30 text-isro-cyan hover:scale-110 active:scale-95 transition-all">
-            <MoveHorizontal className="h-4 w-4" />
+          {/* Glowing slide boundary */}
+          <div className="absolute inset-y-0 w-2 bg-gradient-to-r from-transparent via-accent-primary/10 to-transparent pointer-events-none" />
+
+          {/* Premium Glass Handle */}
+          <div className="absolute h-10 w-10 rounded-xl bg-[#121c2d]/45 border border-white/10 backdrop-blur-md flex items-center justify-center shadow-2xl shadow-black/80 text-white hover:border-accent-primary/40 hover:scale-105 active:scale-95 transition-all">
+            <MoveHorizontal className="h-4 w-4 text-accent-primary" />
           </div>
         </div>
       </div>
 
       {/* Control Toolbar */}
-      <div className="w-full bg-space-card/80 border-t border-white/5 py-2 px-4 flex items-center justify-between gap-4 backdrop-blur-md">
-        <div className="flex items-center gap-1.5">
+      <div className="w-full bg-[#090D15]/90 border-t border-white/5 py-3 px-6 flex items-center justify-between gap-4 backdrop-blur-md">
+        <div className="flex items-center gap-1">
           <button 
             onClick={zoomOut}
             disabled={zoom <= 1}
-            className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition disabled:opacity-30 disabled:pointer-events-none"
+            className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition disabled:opacity-20 disabled:pointer-events-none"
             title="Zoom Out"
           >
-            <ZoomOut className="h-4.5 w-4.5" />
+            <ZoomOut className="h-4 w-4" />
           </button>
-          <span className="text-xs text-gray-400 font-medium px-1 w-10 text-center">
+          <span className="text-[10px] text-gray-400 font-mono font-bold px-1.5 w-12 text-center bg-white/5 border border-white/5 py-0.5 rounded-md">
             {zoom.toFixed(1)}x
           </span>
           <button 
             onClick={zoomIn}
             disabled={zoom >= 3}
-            className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition disabled:opacity-30 disabled:pointer-events-none"
+            className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition disabled:opacity-20 disabled:pointer-events-none"
             title="Zoom In"
           >
-            <ZoomIn className="h-4.5 w-4.5" />
+            <ZoomIn className="h-4 w-4" />
           </button>
           {zoom > 1 && (
             <button 
@@ -188,13 +196,13 @@ export default function BeforeAfterSlider({
               className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition"
               title="Reset Zoom"
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
 
-        <div className="text-[11px] text-gray-400 italic hidden sm:block">
-          Drag the center handle left/right to compare frames.
+        <div className="text-[10px] text-gray-400 tracking-wider uppercase font-bold hidden sm:block">
+          Drag split handle to compare observations
         </div>
 
         <button 
@@ -202,7 +210,7 @@ export default function BeforeAfterSlider({
           className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition"
           title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
         >
-          {isFullscreen ? <Minimize2 className="h-4.5 w-4.5" /> : <Maximize2 className="h-4.5 w-4.5" />}
+          {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
         </button>
       </div>
     </div>

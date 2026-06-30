@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { Play, Pause, FastForward, SkipBack, Info } from "lucide-react";
+import { Play, Pause, SkipBack, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface TimelineFrame {
   index: number;
@@ -60,22 +60,22 @@ export default function FrameTimeline({
   };
 
   return (
-    <div className="w-full glass-panel p-6 rounded-xl border border-white/5 flex flex-col gap-6">
+    <div className="w-full glass-panel p-6 rounded-2xl border border-white/5 flex flex-col gap-6 shadow-xl">
       
-      {/* Timeline scrubbing line */}
-      <div className="relative flex flex-col gap-2">
-        <div className="flex items-center justify-between text-xs text-gray-400">
-          <span>Timeline Path</span>
-          <span className="font-mono text-isro-cyan">
+      {/* Timeline track container */}
+      <div className="relative flex flex-col gap-3">
+        <div className="flex items-center justify-between text-[10px] tracking-wider uppercase font-bold text-gray-400">
+          <span>Observation Timeline Track</span>
+          <span className="font-mono text-accent-primary">
             Frame {currentIndex + 1} of {frames.length}
           </span>
         </div>
 
         {/* The slider bar */}
-        <div className="relative h-2 w-full bg-white/5 rounded-full flex items-center">
+        <div className="relative h-1.5 w-full bg-white/5 rounded-full flex items-center">
           {/* Progress fill */}
           <div 
-            className="absolute left-0 h-full bg-gradient-to-r from-isro-cyan to-isro-blue rounded-full"
+            className="absolute left-0 h-full bg-gradient-to-r from-accent-primary to-accent-secondary rounded-full shadow-[0_0_10px_rgba(22,217,255,0.4)]"
             style={{ width: `${(currentIndex / (frames.length - 1)) * 100}%` }}
           />
 
@@ -90,22 +90,22 @@ export default function FrameTimeline({
                     setIsPlaying(false);
                     onFrameChange(idx);
                   }}
-                  className={`group relative h-4 w-4 rounded-full flex items-center justify-center transition-all ${
+                  className={`group relative h-3.5 w-3.5 rounded-full flex items-center justify-center transition-all ${
                     isSelected 
-                      ? "bg-white border-2 border-isro-cyan scale-125 z-10" 
+                      ? "bg-white border-2 border-accent-primary scale-125 z-10 shadow-[0_0_8px_rgba(22,217,255,0.8)]" 
                       : frame.is_ai 
-                        ? "bg-isro-cyan/50 hover:bg-isro-cyan hover:scale-110" 
-                        : "bg-isro-orange hover:bg-isro-orange hover:scale-110"
+                        ? "bg-accent-primary/60 hover:bg-accent-primary hover:scale-110" 
+                        : "bg-accent-secondary hover:bg-accent-secondary hover:scale-110"
                   }`}
                   title={frame.timestamp}
                 >
                   {/* Tooltip */}
-                  <span className="absolute -top-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 bg-space-dark text-[10px] text-white border border-white/10 px-2 py-0.5 rounded shadow-lg whitespace-nowrap transition-transform z-20">
+                  <span className="absolute -top-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 bg-[#05070B] text-[9px] font-bold text-white border border-white/10 px-2.5 py-1 rounded-md shadow-2xl whitespace-nowrap transition-transform z-20">
                     {frame.timestamp}
                   </span>
                   
-                  {/* Tiny dot */}
-                  <span className={`h-1.5 w-1.5 rounded-full ${isSelected ? "bg-space-deep" : "bg-transparent"}`} />
+                  {/* Tiny dot inside active point */}
+                  <span className={`h-1 w-1 rounded-full ${isSelected ? "bg-[#05070B]" : "bg-transparent"}`} />
                 </button>
               );
             })}
@@ -113,11 +113,11 @@ export default function FrameTimeline({
         </div>
 
         {/* Time stamps markers list */}
-        <div className="flex justify-between px-1 text-[11px] text-gray-400 font-medium">
+        <div className="flex justify-between px-1 text-[9px] font-bold tracking-wider text-gray-400 font-mono">
           {frames.map((frame, idx) => (
             <span 
               key={frame.index}
-              className={`transition-colors ${idx === currentIndex ? "text-white font-bold" : ""}`}
+              className={`transition-colors ${idx === currentIndex ? "text-white font-extrabold" : ""}`}
             >
               {frame.timestamp.replace(" (AI)", "")}
             </span>
@@ -126,51 +126,53 @@ export default function FrameTimeline({
       </div>
 
       {/* Playback Control bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-white/5">
+      <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/5">
         
         {/* Playback buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={handleReset}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 hover:text-white transition"
-            title="Jump to Start"
+            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-gray-400 hover:text-white transition"
+            title="Reset to Start"
           >
-            <SkipBack className="h-4 w-4" />
+            <SkipBack className="h-3.5 w-3.5" />
           </button>
           
           <button
             onClick={handlePrev}
-            className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 hover:text-white text-xs font-semibold transition"
+            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-gray-400 hover:text-white transition"
+            title="Previous Frame"
           >
-            Prev
+            <ChevronLeft className="h-3.5 w-3.5" />
           </button>
 
           <button
             onClick={togglePlay}
-            className={`px-5 py-2 rounded-lg text-space-deep text-xs font-bold tracking-wider flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 ${
+            className={`px-5 py-1.5 rounded-full text-[#05070B] text-xs font-black tracking-wide flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 ${
               isPlaying 
-                ? "bg-isro-orange hover:shadow-lg hover:shadow-isro-orange/20" 
-                : "bg-isro-cyan hover:shadow-lg hover:shadow-isro-cyan/20"
+                ? "bg-accent-secondary hover:shadow-lg hover:shadow-accent-secondary/20" 
+                : "bg-accent-primary hover:shadow-lg hover:shadow-accent-primary/20"
             }`}
           >
             {isPlaying ? (
               <>
-                <Pause className="h-3.5 w-3.5 fill-current" />
+                <Pause className="h-3 w-3 fill-current" />
                 <span>PAUSE</span>
               </>
             ) : (
               <>
-                <Play className="h-3.5 w-3.5 fill-current" />
-                <span>PLAY AUTO</span>
+                <Play className="h-3 w-3 fill-current" />
+                <span>PLAY SEQUENCER</span>
               </>
             )}
           </button>
 
           <button
             onClick={handleNext}
-            className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 hover:text-white text-xs font-semibold transition"
+            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-gray-400 hover:text-white transition"
+            title="Next Frame"
           >
-            Next
+            <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
 
@@ -179,26 +181,26 @@ export default function FrameTimeline({
           
           {/* Speed settings */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400">Interval Speed:</span>
+            <span className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Speed:</span>
             <select
               value={playbackSpeed}
               onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-              className="bg-white/5 border border-white/10 rounded-lg text-xs py-1 px-2.5 text-white focus:outline-none focus:border-isro-cyan"
+              className="bg-white/5 border border-white/10 rounded-lg text-[10px] py-1 px-2.5 text-white font-bold tracking-wide focus:outline-none focus:border-accent-primary"
             >
-              <option value={1000} className="bg-space-dark text-white">0.5x (1.0s)</option>
-              <option value={600} className="bg-space-dark text-white">1.0x (0.6s)</option>
-              <option value={300} className="bg-space-dark text-white">2.0x (0.3s)</option>
+              <option value={1000} className="bg-[#090D15] text-white">0.5x (1.0s)</option>
+              <option value={600} className="bg-[#090D15] text-white">1.0x (0.6s)</option>
+              <option value={300} className="bg-[#090D15] text-white">2.0x (0.3s)</option>
             </select>
           </div>
 
           {/* Color legend */}
-          <div className="hidden sm:flex items-center gap-4 text-[11px] text-gray-400">
+          <div className="hidden sm:flex items-center gap-4 text-[9px] font-bold uppercase tracking-wider text-gray-400">
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-isro-orange" />
+              <span className="h-1.5 w-1.5 rounded-full bg-accent-secondary" />
               <span>Input Observation</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-isro-cyan" />
+              <span className="h-1.5 w-1.5 rounded-full bg-accent-primary" />
               <span>AI Synthesized Frame</span>
             </span>
           </div>

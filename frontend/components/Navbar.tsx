@@ -16,26 +16,26 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-space-deep/70 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+      <header className="pointer-events-auto flex items-center justify-between w-full max-w-4xl h-14 px-6 rounded-full glass-panel shadow-2xl backdrop-blur-2xl">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 border border-white/10 group-hover:border-isro-cyan/40 transition-colors">
-            <Orbit className="h-5 w-5 text-isro-cyan animate-orbit-fast" />
-            <div className="absolute inset-0 rounded-lg bg-isro-cyan/5 blur-sm group-hover:bg-isro-cyan/10 transition-colors" />
+          <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-white/5 border border-white/10 group-hover:border-accent-primary/40 transition-colors">
+            <Orbit className="h-4 w-4 text-accent-primary animate-orbit-fast" />
+            <div className="absolute inset-0 rounded-full bg-accent-primary/5 blur-sm group-hover:bg-accent-primary/10 transition-colors" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-bold tracking-wider text-white flex items-center gap-1.5">
-              SATFLOW <span className="text-isro-orange text-xs px-1.5 py-0.5 rounded bg-isro-orange/10 border border-isro-orange/20">AI</span>
+            <span className="text-xs font-black tracking-tight text-white flex items-center gap-1">
+              SATFLOW <span className="text-[8px] font-bold text-accent-primary px-1 py-0.2 rounded bg-accent-primary/10 border border-accent-primary/20">AI</span>
             </span>
-            <span className="text-[10px] text-gray-400 tracking-widest uppercase font-semibold">
+            <span className="text-[8px] text-gray-500 tracking-wider uppercase font-semibold">
               ISRO HACKATHON
             </span>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1.5">
+        <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -44,23 +44,19 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 flex items-center gap-2 group"
+                className="relative px-3.5 py-1.5 text-xs font-semibold rounded-full transition-colors duration-200 flex items-center gap-1.5 group"
                 style={{
-                  color: isActive ? "#ffffff" : "#9ca3af",
+                  color: isActive ? "#ffffff" : "#94a3b8",
                 }}
               >
-                <Icon className={`h-4 w-4 transition-colors ${isActive ? "text-isro-cyan" : "text-gray-400 group-hover:text-isro-cyan"}`} />
+                <Icon className={`h-3.5 w-3.5 transition-colors ${isActive ? "text-accent-primary" : "text-gray-400 group-hover:text-accent-primary"}`} />
                 <span>{item.name}</span>
                 {isActive && (
                   <motion.div
                     layoutId="activeNav"
-                    className="absolute inset-0 bg-white/5 border border-white/10 rounded-full -z-10 shadow-sm"
+                    className="absolute inset-0 bg-accent-primary/10 border border-accent-primary/20 rounded-full -z-10 shadow-sm"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
-                )}
-                {/* Hover Glow line */}
-                {!isActive && (
-                  <span className="absolute bottom-1 left-1/2 w-0 h-0.5 bg-isro-cyan/50 rounded-full transition-all duration-300 group-hover:w-1/3 group-hover:-translate-x-1/2" />
                 )}
               </Link>
             );
@@ -68,15 +64,15 @@ export default function Navbar() {
         </nav>
 
         {/* Call to Action Button */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center">
           <Link
             href="/dashboard"
-            className="hidden sm:inline-flex items-center justify-center px-4 py-2 text-xs font-semibold tracking-wider text-space-deep bg-gradient-to-r from-isro-cyan to-isro-blue rounded-full hover:shadow-lg hover:shadow-isro-cyan/20 hover:scale-105 transition-all duration-300 active:scale-95"
+            className="inline-flex items-center justify-center px-4 py-1.5 text-xs font-bold tracking-wide text-bg-primary bg-accent-primary rounded-full hover:shadow-lg hover:shadow-accent-primary/30 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200"
           >
-            LAUNCH APP
+            LAUNCH WORKSPACE
           </Link>
         </div>
-      </div>
-    </header>
+      </header>
+    </div>
   );
 }

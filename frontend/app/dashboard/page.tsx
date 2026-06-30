@@ -3,9 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { 
   Upload, Sparkles, AlertCircle, RefreshCw, Download, 
-  Settings, Cpu, BarChart3, HelpCircle, FileImage, 
-  Play, CheckCircle, HelpCircle as HelpIcon, Layers,
-  Activity
+  Settings, Cpu, FileImage, Play, CheckCircle, Layers, Activity
 } from "lucide-react";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import FrameTimeline from "@/components/FrameTimeline";
@@ -72,7 +70,6 @@ export default function DashboardPage() {
       if (!res.ok) throw new Error("Failed to load sample files from backend.");
       const data = await res.json();
       
-      // Convert base64 data to File objects to simulate local uploads
       const fetchBlob = async (b64: string, filename: string) => {
         const res = await fetch(b64);
         const blob = await res.blob();
@@ -86,8 +83,6 @@ export default function DashboardPage() {
       setFrameB(fileB);
       setFrameAPreview(data.frameA_b64);
       setFrameBPreview(data.frameB_b64);
-      
-      // Clear previous outputs
       setResult(null);
     } catch (err: any) {
       setError(err.message || "Could not retrieve sample images.");
@@ -99,7 +94,6 @@ export default function DashboardPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate type
     if (!file.type.startsWith("image/")) {
       setError("Please upload an image file.");
       return;
@@ -162,7 +156,6 @@ export default function DashboardPage() {
 
       const data: GenerationResponse = await response.json();
       setResult(data);
-      // Select the first generated frame initially (index 1)
       setCurrentFrameIdx(1);
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
@@ -179,7 +172,6 @@ export default function DashboardPage() {
     if (visualizationMode === "flow") url = currentFrame.flow_url;
     else if (visualizationMode === "heatmap") url = currentFrame.heatmap_url;
 
-    // Trigger standard download
     const link = document.createElement("a");
     link.href = `${API_BASE_URL}${url}`;
     link.download = `satflow_${currentFrame.timestamp.replace(":", "-").replace(" ", "_")}.png`;
@@ -188,7 +180,6 @@ export default function DashboardPage() {
     document.body.removeChild(link);
   };
 
-  // Get active image to display based on mode
   const getActiveImageUrl = (frame: GeneratedFrame) => {
     if (visualizationMode === "flow") return `${API_BASE_URL}${frame.flow_url}`;
     if (visualizationMode === "heatmap") return `${API_BASE_URL}${frame.heatmap_url}`;
@@ -196,117 +187,116 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 space-y-8 relative">
+    <div className="relative min-h-screen bg-bg-primary text-text-primary overflow-hidden tech-grid-bg radial-spotlight pt-28 pb-20 px-6 sm:px-12 max-w-7xl mx-auto">
+      <div className="noise-overlay" />
       
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-white/5">
+      {/* Header bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/5 mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-            Analysis Dashboard
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            Upload consecutive satellite passes to synthesize intermediate frames and estimate wind velocity fields.
+          <h1 className="text-2xl font-black tracking-tight text-white uppercase">Workstation Dashboard</h1>
+          <p className="text-xs text-text-muted mt-1 leading-relaxed font-medium">
+            Ingest dual temporal satellite frames to run neural super-resolution and velocity vectoring.
           </p>
         </div>
         
-        {/* Quick Sample Button */}
+        {/* Header CTA Buttons */}
         <div className="flex items-center gap-3">
           <button
             onClick={handleLoadSamples}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-isro-cyan bg-isro-cyan/10 border border-isro-cyan/20 rounded-lg hover:bg-isro-cyan/20 transition-all duration-300"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent-primary/10 hover:bg-accent-primary/20 border border-accent-primary/20 text-xs font-black tracking-wider uppercase text-accent-primary rounded-full transition-all duration-200"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            <span>Load Sample Cyclone Data</span>
+            <span>Load Sample cyclone</span>
           </button>
           
           {(frameA || frameB) && (
             <button
               onClick={handleReset}
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold rounded-full text-white transition-all duration-200"
             >
-              <RefreshCw className="h-3.5 w-3.5" />
-              <span>Reset</span>
+              <RefreshCw className="h-3.5 w-3.5 text-accent-secondary" />
+              <span>Reset Workspace</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Main Workspace Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      {/* Main Grid workspace */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-10">
         
-        {/* Left Control Column (Upload & Settings) */}
+        {/* Left column side parameters */}
         <div className="lg:col-span-4 flex flex-col gap-6">
           
-          {/* 1. File Uploaders Card */}
-          <div className="glass-panel p-5 rounded-xl border border-white/5 space-y-4">
-            <h2 className="text-sm font-bold tracking-wider text-gray-400 uppercase flex items-center gap-2">
-              <FileImage className="h-4 w-4 text-isro-cyan" />
-              <span>Upload Imagery</span>
+          {/* Ingestion block */}
+          <div className="glass-panel p-6 rounded-2xl border border-white/5 space-y-5">
+            <h2 className="text-xs font-bold tracking-wider text-gray-400 uppercase flex items-center gap-2">
+              <FileImage className="h-3.5 w-3.5 text-accent-primary" />
+              <span>Observation Ingestion</span>
             </h2>
 
-            {/* Frame A Slot */}
+            {/* Pass A */}
             <div className="flex flex-col gap-2">
-              <label className="text-xs text-gray-300 font-medium">First Pass (Frame A):</label>
+              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Pass A (T0 Frame)</span>
               {frameAPreview ? (
-                <div className="relative aspect-video rounded-lg border border-white/15 overflow-hidden group bg-space-deep">
+                <div className="relative aspect-video rounded-xl border border-white/10 overflow-hidden group bg-[#05070B] shadow-inner">
                   <img src={frameAPreview} alt="Frame A Preview" className="w-full h-full object-contain" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                    <label className="cursor-pointer text-xs bg-white text-space-deep py-1 px-3 rounded font-bold hover:scale-105 active:scale-95 transition">
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 backdrop-blur-sm">
+                    <label className="cursor-pointer text-[10px] bg-white text-bg-primary py-1.5 px-4 rounded-full font-black tracking-wider uppercase hover:scale-105 active:scale-95 transition-all duration-200">
                       Replace Image
                       <input type="file" onChange={(e) => handleFileChange(e, "A")} className="hidden" accept="image/*" />
                     </label>
                   </div>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center aspect-video rounded-lg border-2 border-dashed border-white/10 hover:border-isro-cyan/50 hover:bg-isro-cyan/5 cursor-pointer transition duration-300">
-                  <Upload className="h-6 w-6 text-gray-400 mb-2 group-hover:text-isro-cyan" />
-                  <span className="text-xs text-gray-400 font-medium">Upload Pass A</span>
+                <label className="flex flex-col items-center justify-center aspect-video rounded-xl border-2 border-dashed border-white/5 hover:border-accent-primary/30 hover:bg-accent-primary/[0.02] cursor-pointer transition-all duration-300">
+                  <Upload className="h-5 w-5 text-gray-400 mb-2" />
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Upload T0 Frame</span>
                   <input type="file" onChange={(e) => handleFileChange(e, "A")} className="hidden" accept="image/*" />
                 </label>
               )}
             </div>
 
-            {/* Frame B Slot */}
+            {/* Pass B */}
             <div className="flex flex-col gap-2">
-              <label className="text-xs text-gray-300 font-medium">Second Pass (Frame B):</label>
+              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Pass B (T1 Frame)</span>
               {frameBPreview ? (
-                <div className="relative aspect-video rounded-lg border border-white/15 overflow-hidden group bg-space-deep">
+                <div className="relative aspect-video rounded-xl border border-white/10 overflow-hidden group bg-[#05070B] shadow-inner">
                   <img src={frameBPreview} alt="Frame B Preview" className="w-full h-full object-contain" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                    <label className="cursor-pointer text-xs bg-white text-space-deep py-1 px-3 rounded font-bold hover:scale-105 active:scale-95 transition">
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 backdrop-blur-sm">
+                    <label className="cursor-pointer text-[10px] bg-white text-bg-primary py-1.5 px-4 rounded-full font-black tracking-wider uppercase hover:scale-105 active:scale-95 transition-all duration-200">
                       Replace Image
                       <input type="file" onChange={(e) => handleFileChange(e, "B")} className="hidden" accept="image/*" />
                     </label>
                   </div>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center aspect-video rounded-lg border-2 border-dashed border-white/10 hover:border-isro-cyan/50 hover:bg-isro-cyan/5 cursor-pointer transition duration-300">
-                  <Upload className="h-6 w-6 text-gray-400 mb-2" />
-                  <span className="text-xs text-gray-400 font-medium">Upload Pass B</span>
+                <label className="flex flex-col items-center justify-center aspect-video rounded-xl border-2 border-dashed border-white/5 hover:border-accent-primary/30 hover:bg-accent-primary/[0.02] cursor-pointer transition-all duration-300">
+                  <Upload className="h-5 w-5 text-gray-400 mb-2" />
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Upload T1 Frame</span>
                   <input type="file" onChange={(e) => handleFileChange(e, "B")} className="hidden" accept="image/*" />
                 </label>
               )}
             </div>
           </div>
 
-          {/* 2. Parameters Card */}
-          <div className="glass-panel p-5 rounded-xl border border-white/5 space-y-4">
-            <h2 className="text-sm font-bold tracking-wider text-gray-400 uppercase flex items-center gap-2">
-              <Settings className="h-4 w-4 text-isro-orange" />
+          {/* Model selection parameters block */}
+          <div className="glass-panel p-6 rounded-2xl border border-white/5 space-y-5">
+            <h2 className="text-xs font-bold tracking-wider text-gray-400 uppercase flex items-center gap-2">
+              <Settings className="h-3.5 w-3.5 text-accent-secondary" />
               <span>Model Parameters</span>
             </h2>
 
-            {/* Selector: N-Frames */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-gray-300 font-medium">Interpolation Frames:</label>
+            {/* Interpolated Frames choice */}
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Interpolation factor</label>
               <div className="grid grid-cols-3 gap-2">
                 {[1, 3, 5].map((val) => (
                   <button
                     key={val}
                     onClick={() => setNumFrames(val)}
-                    className={`py-1.5 text-xs font-bold rounded-lg border transition ${
+                    className={`py-2 text-[10px] font-black uppercase tracking-wider rounded-lg border transition-all duration-200 ${
                       numFrames === val 
-                        ? "bg-isro-cyan/10 border-isro-cyan text-isro-cyan" 
+                        ? "bg-accent-primary/10 border-accent-primary/30 text-accent-primary shadow-[0_0_8px_rgba(22,217,255,0.1)]" 
                         : "bg-white/5 border-white/5 text-gray-400 hover:bg-white/10"
                     }`}
                   >
@@ -316,96 +306,96 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Selector: Model Choice */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-gray-300 font-medium">Inference Architecture:</label>
-              <div className="flex flex-col gap-2">
+            {/* Engine choice */}
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Interpolation Engine</label>
+              <div className="flex flex-col gap-2.5">
                 <button
                   onClick={() => setModelType("rife")}
-                  className={`p-3 text-left rounded-lg border transition flex flex-col gap-0.5 ${
+                  className={`p-3 text-left rounded-xl border transition-all duration-200 flex flex-col gap-1 ${
                     modelType === "rife" 
-                      ? "bg-isro-cyan/5 border-isro-cyan text-white" 
+                      ? "bg-accent-primary/[0.03] border-accent-primary/30 text-white" 
                       : "bg-white/5 border-white/5 text-gray-400 hover:bg-white/10"
                   }`}
                 >
-                  <span className="text-xs font-bold flex items-center gap-1.5">
-                    <span>RIFE AI Interpolation (Default)</span>
-                    <span className="text-[9px] px-1 bg-isro-cyan/20 border border-isro-cyan/30 rounded text-isro-cyan font-bold uppercase">
-                      Neural Network
+                  <span className="text-[10px] font-black uppercase tracking-wider flex items-center gap-2">
+                    <span>RIFE Neural Interpolation</span>
+                    <span className="text-[8px] px-1 bg-accent-primary/10 border border-accent-primary/20 rounded text-accent-primary font-black uppercase">
+                      AI Model
                     </span>
                   </span>
-                  <span className="text-[10px] text-gray-400">
-                    Runs pre-trained RIFE model. Auto-falls back to optical flow if weights are absent.
+                  <span className="text-[9px] text-text-muted leading-relaxed font-medium">
+                    Runs fine-tuned RIFE v3 satellite network. Auto-falls back to optical flow on load error.
                   </span>
                 </button>
 
                 <button
                   onClick={() => setModelType("optical_flow")}
-                  className={`p-3 text-left rounded-lg border transition flex flex-col gap-0.5 ${
+                  className={`p-3 text-left rounded-xl border transition-all duration-200 flex flex-col gap-1 ${
                     modelType === "optical_flow" 
-                      ? "bg-isro-orange/5 border-isro-orange text-white" 
+                      ? "bg-accent-secondary/[0.03] border-accent-secondary/30 text-white" 
                       : "bg-white/5 border-white/5 text-gray-400 hover:bg-white/10"
                   }`}
                 >
-                  <span className="text-xs font-bold flex items-center gap-1.5">
-                    <span>Farneback Classical Flow warping</span>
-                    <span className="text-[9px] px-1 bg-isro-orange/20 border border-isro-orange/30 rounded text-isro-orange font-bold uppercase">
+                  <span className="text-[10px] font-black uppercase tracking-wider flex items-center gap-2">
+                    <span>Farneback Classical Flow</span>
+                    <span className="text-[8px] px-1 bg-accent-secondary/10 border border-accent-secondary/20 rounded text-accent-secondary font-black uppercase">
                       Baseline
                     </span>
                   </span>
-                  <span className="text-[10px] text-gray-400">
-                    Warp pixels along motion vectors using Farneback dense optical flow. Runs purely on CPU.
+                  <span className="text-[9px] text-text-muted leading-relaxed font-medium">
+                    Evaluates displacement fields using pixel neighborhood expansions. Runs purely on CPU.
                   </span>
                 </button>
               </div>
             </div>
-            
-            {/* Generate Trigger */}
+
+            {/* Run generation CTA */}
             <button
               onClick={handleGenerate}
               disabled={isGenerating || !frameA || !frameB}
-              className="w-full py-3 bg-gradient-to-r from-isro-cyan to-isro-blue text-space-deep text-sm font-bold tracking-wider rounded-lg flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-isro-cyan/20 disabled:opacity-30 disabled:pointer-events-none hover:scale-102 active:scale-98 transition-all"
+              className="w-full py-3.5 bg-accent-primary hover:bg-accent-primary/95 text-bg-primary text-xs font-black tracking-widest rounded-full uppercase flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-accent-primary/20 disabled:opacity-20 disabled:pointer-events-none hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
             >
               {isGenerating ? (
                 <>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  <span>SYNTHESIZING...</span>
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                  <span>SYNTHESIZING DYNAMICS...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="h-4 w-4 fill-current" />
-                  <span>GENERATE INTERMEDIATE OBSERVATIONS</span>
+                  <Sparkles className="h-3.5 w-3.5 fill-current" />
+                  <span>GENERATE INTERMEDIATE STEPS</span>
                 </>
               )}
             </button>
           </div>
 
-          {/* 3. Hardware Monitor Panel */}
+          {/* Hardware status block */}
           {hwStatus && (
-            <div className="glass-panel p-5 rounded-xl border border-white/5 space-y-3">
+            <div className="glass-panel p-5 rounded-2xl border border-white/5 space-y-4">
               <h2 className="text-xs font-bold tracking-wider text-gray-400 uppercase flex items-center gap-2">
-                <Activity className="h-4 w-4 text-isro-purple" />
+                <Activity className="h-3.5 w-3.5 text-accent-primary animate-pulse" />
                 <span>Backend Hardware Status</span>
               </h2>
-              <div className="space-y-1.5 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Inference Device:</span>
-                  <span className="text-white font-bold uppercase">{hwStatus.device}</span>
+              <div className="space-y-2 text-[10px] font-bold uppercase tracking-wider">
+                <div className="flex justify-between items-center py-0.5">
+                  <span className="text-gray-400">Inference Device</span>
+                  <span className="text-white font-mono bg-white/5 px-2 py-0.5 rounded border border-white/5">{hwStatus.device}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Neural Engine:</span>
-                  <span className="text-isro-cyan font-bold">{hwStatus.engine}</span>
+                <div className="flex justify-between items-center py-0.5">
+                  <span className="text-gray-400">Neural Engine</span>
+                  <span className="text-accent-primary">{hwStatus.engine}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Status:</span>
-                  <span className={`font-bold ${hwStatus.weights_loaded ? "text-green-400" : "text-isro-orange"}`}>
-                    {hwStatus.weights_loaded ? "✓ Loaded" : "Weight Missing"}
+                <div className="flex justify-between items-center py-0.5">
+                  <span className="text-gray-400">Status</span>
+                  <span className={hwStatus.weights_loaded ? "text-green-400" : "text-status-warning"}>
+                    {hwStatus.weights_loaded ? "✓ Loaded" : "Weights Missing"}
                   </span>
                 </div>
-                <div className="flex justify-between border-t border-white/5 pt-1.5 mt-1.5">
-                  <span className="text-gray-400">Fallback:</span>
-                  <span className={`font-bold ${hwStatus.fallback ? "text-isro-orange" : "text-green-400"}`}>
-                    {hwStatus.fallback ? "Fallback Mode Enabled" : "Disabled"}
+                <div className="flex justify-between items-center py-0.5 border-t border-white/5 pt-2">
+                  <span className="text-gray-400">Fallback engine</span>
+                  <span className={hwStatus.fallback ? "text-status-warning" : "text-green-400"}>
+                    {hwStatus.fallback ? "Active" : "Disabled"}
                   </span>
                 </div>
               </div>
@@ -416,50 +406,56 @@ export default function DashboardPage() {
         {/* Right Output Column (Visualization & Timeline) */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           {error && (
-            <div className="p-4 bg-red-950/20 border border-red-500/30 rounded-xl flex gap-3 text-red-200">
-              <AlertCircle className="h-5 w-5 text-red-400 shrink-0" />
-              <div className="text-sm">
-                <span className="font-bold">Execution Error:</span> {error}
+            <div className="p-4 bg-status-danger/10 border border-status-danger/25 rounded-2xl flex gap-3 text-red-200">
+              <AlertCircle className="h-5 w-5 text-status-danger shrink-0" />
+              <div className="text-xs font-medium leading-normal">
+                <span className="font-black uppercase tracking-wider mr-1">Execution Error:</span> {error}
               </div>
             </div>
           )}
 
           {!result && !isGenerating ? (
-            /* Dashboard Empty State placeholder */
-            <div className="w-full min-h-[400px] border border-white/5 rounded-xl flex flex-col items-center justify-center text-center p-8 bg-space-card/25 backdrop-blur-md">
-              <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 border border-white/10 mb-4 animate-float">
-                <Cpu className="h-8 w-8 text-isro-cyan" />
-                <div className="absolute inset-0 bg-isro-cyan/5 blur-md rounded-2xl" />
+            /* Dashboard Empty State */
+            <div className="w-full min-h-[440px] border border-white/5 rounded-2xl flex flex-col items-center justify-center text-center p-8 bg-[#090D15]/45 backdrop-blur-md relative">
+              <div className="absolute inset-0 bg-accent-primary/3 rounded-full filter blur-3xl animate-pulse-slow" />
+              <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 border border-white/10 mb-5 animate-float z-10">
+                <Cpu className="h-6 w-6 text-accent-primary" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">Workspace Idle</h3>
-              <p className="text-sm text-gray-400 max-w-sm leading-relaxed">
-                Click <span className="text-isro-cyan font-bold">"Load Sample Cyclone Data"</span> to test the setup instantly, or upload custom consecutive satellite frames in the sidebar.
+              <h3 className="text-base font-black tracking-wider text-white uppercase mb-2 z-10">Workspace Idle</h3>
+              <p className="text-xs text-text-muted max-w-xs leading-relaxed font-medium mb-6 z-10">
+                Incorporate Frame A and Frame B to launch calculations, or initialize cyclone observations immediately.
               </p>
+              <button
+                onClick={handleLoadSamples}
+                className="z-10 px-6 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-bold uppercase tracking-wider rounded-full transition"
+              >
+                Load Default Sample
+              </button>
             </div>
           ) : isGenerating ? (
-            /* Skeleton/Loading State */
-            <div className="w-full aspect-video min-h-[350px] border border-white/5 rounded-xl flex flex-col items-center justify-center p-8 bg-space-card/25 backdrop-blur-sm space-y-4">
-              <div className="h-10 w-10 border-4 border-isro-cyan/30 border-t-isro-cyan rounded-full animate-spin" />
-              <div className="text-center space-y-1.5">
-                <p className="text-sm text-white font-bold tracking-wider">RUNNING TEMPORAL SUPER-RESOLUTION</p>
-                <p className="text-xs text-gray-400">Loading model layers, estimating dense optical flow fields, and generating intermediate frames...</p>
+            /* Loading State */
+            <div className="w-full aspect-video min-h-[380px] border border-white/5 rounded-2xl flex flex-col items-center justify-center p-8 bg-[#090D15]/45 backdrop-blur-sm space-y-5">
+              <div className="h-8 w-8 border-3 border-accent-primary/25 border-t-accent-primary rounded-full animate-spin" />
+              <div className="text-center space-y-1">
+                <p className="text-xs font-black tracking-widest text-white uppercase">Running Temporal Super-Resolution</p>
+                <p className="text-[10px] text-text-muted font-medium">Interpolating intermediate layers, building optical flow vectors, and generating differences heatmaps...</p>
               </div>
             </div>
-          ) : (
+          ) : result && (
             /* Result Panel */
             <div className="flex flex-col gap-6">
               
               {/* Toolbar & Visual Mode selection */}
-              <div className="flex flex-wrap items-center justify-between gap-4 p-4 glass-panel border border-white/5 rounded-xl">
+              <div className="flex flex-wrap items-center justify-between gap-4 p-3.5 glass-panel rounded-2xl">
                 {/* Mode Selectors */}
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400 font-bold uppercase tracking-wider hidden sm:inline-block">Overlay:</span>
-                  <div className="flex bg-white/5 border border-white/10 rounded-lg p-0.5">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider hidden sm:inline-block">Overlay:</span>
+                  <div className="flex bg-[#05070B] border border-white/5 rounded-full p-0.5">
                     <button
                       onClick={() => setVisualizationMode("normal")}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
+                      className={`px-4 py-1.5 text-[10px] uppercase font-bold tracking-wider rounded-full transition-all duration-200 ${
                         visualizationMode === "normal" 
-                          ? "bg-isro-cyan text-space-deep font-bold" 
+                          ? "bg-accent-primary text-bg-primary" 
                           : "text-gray-400 hover:text-white"
                       }`}
                     >
@@ -467,9 +463,9 @@ export default function DashboardPage() {
                     </button>
                     <button
                       onClick={() => setVisualizationMode("flow")}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
+                      className={`px-4 py-1.5 text-[10px] uppercase font-bold tracking-wider rounded-full transition-all duration-200 ${
                         visualizationMode === "flow" 
-                          ? "bg-isro-cyan text-space-deep font-bold" 
+                          ? "bg-accent-primary text-bg-primary" 
                           : "text-gray-400 hover:text-white"
                       }`}
                     >
@@ -477,9 +473,9 @@ export default function DashboardPage() {
                     </button>
                     <button
                       onClick={() => setVisualizationMode("heatmap")}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
+                      className={`px-4 py-1.5 text-[10px] uppercase font-bold tracking-wider rounded-full transition-all duration-200 ${
                         visualizationMode === "heatmap" 
-                          ? "bg-isro-cyan text-space-deep font-bold" 
+                          ? "bg-accent-primary text-bg-primary" 
                           : "text-gray-400 hover:text-white"
                       }`}
                     >
@@ -490,25 +486,25 @@ export default function DashboardPage() {
 
                 {/* Info badge */}
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-bold text-gray-400 flex items-center gap-1.5">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
                     {result?.model_used === "rife" ? (
                       <>
                         <span>AI Engine:</span>
-                        <span className="text-green-400 font-bold px-2 py-0.5 rounded bg-green-500/10 border border-green-500/20">
+                        <span className="text-green-400 font-extrabold px-2 py-0.5 rounded bg-green-500/10 border border-green-500/20">
                           RIFE Neural Interpolation
                         </span>
                       </>
                     ) : result?.model_used === "optical_flow_fallback" ? (
                       <>
                         <span>Engine:</span>
-                        <span className="text-isro-orange font-bold px-2 py-0.5 rounded bg-isro-orange/10 border border-isro-orange/20">
-                          Classical Optical Flow (Fallback Mode Enabled)
+                        <span className="text-status-warning font-extrabold px-2 py-0.5 rounded bg-status-warning/10 border border-status-warning/20">
+                          Classical Flow (Fallback)
                         </span>
                       </>
                     ) : (
                       <>
                         <span>Engine:</span>
-                        <span className="text-gray-300 font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10">
+                        <span className="text-gray-300 font-extrabold px-2 py-0.5 rounded bg-white/5 border border-white/10">
                           Classical Optical Flow
                         </span>
                       </>
@@ -517,9 +513,9 @@ export default function DashboardPage() {
                   
                   <button
                     onClick={handleDownloadFrame}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold rounded-lg text-white transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-black uppercase tracking-wider rounded-full text-white transition-all duration-200"
                   >
-                    <Download className="h-3.5 w-3.5 text-isro-cyan" />
+                    <Download className="h-3 w-3 text-accent-primary" />
                     <span>Download Frame</span>
                   </button>
                 </div>
@@ -529,8 +525,8 @@ export default function DashboardPage() {
               <BeforeAfterSlider 
                 leftImage={frameAPreview || ""}
                 rightImage={getActiveImageUrl(result.frames[currentFrameIdx])}
-                leftLabel="Start Pass A (10:00)"
-                rightLabel={`Selected Frame (${result.frames[currentFrameIdx].timestamp})`}
+                leftLabel="Pass A (T0)"
+                rightLabel={`Observation (${result.frames[currentFrameIdx].timestamp})`}
               />
 
               {/* Playback Timeline */}
@@ -545,42 +541,42 @@ export default function DashboardPage() {
                 
                 {/* Card SSIM */}
                 <div className="glass-panel p-4 rounded-xl border border-white/5 flex flex-col gap-1">
-                  <span className="text-[10px] text-gray-400 tracking-wider font-bold uppercase">SSIM (Structural Similarity)</span>
-                  <div className="flex items-baseline gap-1.5 mt-1">
-                    <span className="text-2xl font-extrabold text-isro-cyan">{result?.metrics.ssim}</span>
-                    <span className="text-[10px] text-gray-400">/ 1.0</span>
+                  <span className="text-[9px] text-gray-400 tracking-wider font-bold uppercase">SSIM (Structural similarity)</span>
+                  <div className="flex items-baseline gap-1 mt-0.5">
+                    <span className="text-xl font-black text-accent-primary">{result?.metrics.ssim}</span>
+                    <span className="text-[9px] text-gray-500 font-bold">/ 1.0</span>
                   </div>
-                  <p className="text-[10px] text-gray-500 leading-tight mt-1">Estimates structural shape preservation of clouds.</p>
+                  <p className="text-[9px] text-text-muted leading-tight font-medium">Estimates structural cloud shape preservation.</p>
                 </div>
 
                 {/* Card PSNR */}
                 <div className="glass-panel p-4 rounded-xl border border-white/5 flex flex-col gap-1">
-                  <span className="text-[10px] text-gray-400 tracking-wider font-bold uppercase">PSNR (Peak Signal-to-Noise)</span>
-                  <div className="flex items-baseline gap-1.5 mt-1">
-                    <span className="text-2xl font-extrabold text-isro-cyan">{result?.metrics.psnr}</span>
-                    <span className="text-[10px] text-gray-400">dB</span>
+                  <span className="text-[9px] text-gray-400 tracking-wider font-bold uppercase">PSNR (Peak signal-to-noise)</span>
+                  <div className="flex items-baseline gap-1 mt-0.5">
+                    <span className="text-xl font-black text-accent-primary">{result?.metrics.psnr}</span>
+                    <span className="text-[9px] text-gray-500 font-bold">dB</span>
                   </div>
-                  <p className="text-[10px] text-gray-500 leading-tight mt-1">Measures pixel amplitude difference metrics.</p>
+                  <p className="text-[9px] text-text-muted leading-tight font-medium">Measures pixel amplitude difference ratios.</p>
                 </div>
 
                 {/* Card LPIPS */}
                 <div className="glass-panel p-4 rounded-xl border border-white/5 flex flex-col gap-1">
-                  <span className="text-[10px] text-gray-400 tracking-wider font-bold uppercase">LPIPS (Perceptual Distance)</span>
-                  <div className="flex items-baseline gap-1.5 mt-1">
-                    <span className="text-2xl font-extrabold text-isro-orange">{result?.metrics.lpips}</span>
-                    <span className="text-[10px] text-gray-400">(est.)</span>
+                  <span className="text-[9px] text-gray-400 tracking-wider font-bold uppercase">LPIPS (Perceptual distance)</span>
+                  <div className="flex items-baseline gap-1 mt-0.5">
+                    <span className="text-xl font-black text-accent-secondary">{result?.metrics.lpips}</span>
+                    <span className="text-[9px] text-gray-500 font-bold">(est.)</span>
                   </div>
-                  <p className="text-[10px] text-gray-500 leading-tight mt-1">Perceptual error distance (lower is better).</p>
+                  <p className="text-[9px] text-text-muted leading-tight font-medium">Perceptual error distance (lower is better).</p>
                 </div>
 
                 {/* Card Inference time */}
                 <div className="glass-panel p-4 rounded-xl border border-white/5 flex flex-col gap-1">
-                  <span className="text-[10px] text-gray-400 tracking-wider font-bold uppercase">Inference Time</span>
-                  <div className="flex items-baseline gap-1.5 mt-1">
-                    <span className="text-2xl font-extrabold text-isro-cyan">{result?.inference_time_ms}</span>
-                    <span className="text-[10px] text-gray-400">ms</span>
+                  <span className="text-[9px] text-gray-400 tracking-wider font-bold uppercase">Inference Time</span>
+                  <div className="flex items-baseline gap-1 mt-0.5">
+                    <span className="text-xl font-black text-accent-primary">{result?.inference_time_ms}</span>
+                    <span className="text-[9px] text-gray-500 font-bold">ms</span>
                   </div>
-                  <p className="text-[10px] text-gray-500 leading-tight mt-1">Combined pre-processing, interpolation, and rendering.</p>
+                  <p className="text-[9px] text-text-muted leading-tight font-medium">Pre-processing, interpolation, and rendering.</p>
                 </div>
               </div>
             </div>

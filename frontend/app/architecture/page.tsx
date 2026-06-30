@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { 
   Database, RefreshCw, Cpu, Film, BarChart3, 
-  Layers, ChevronRight, HelpCircle, Code 
+  Layers, ChevronRight, Code 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -29,8 +29,8 @@ export default function ArchitecturePage() {
       title: "1. Satellite Images",
       subtitle: "Optical Observation Passes",
       icon: Database,
-      color: "#ff9933", // Orange
-      description: "Consecutive satellite image acquisitions (e.g. from INSAT-3D, Himawari, or Sentinel-2) capturing cloud systems, cyclones, floods, or wildfires at timestamps T0 and T1.",
+      color: "#4F8CFF", // Accent Secondary
+      description: "Consecutive satellite image acquisitions (e.g. from INSAT-3D or Sentinel-2) capturing cloud systems at timestamps T0 and T1.",
       details: [
         "Accepts multi-spectral or standard RGB imagery.",
         "Allows dynamic resolution inputs.",
@@ -50,15 +50,15 @@ export default function ArchitecturePage() {
       title: "2. Preprocessing",
       subtitle: "Padding & Normalization",
       icon: RefreshCw,
-      color: "#bd00ff", // Purple
+      color: "#16D9FF", // Accent Primary
       description: "Prepares raw image channels for the neural network. RIFE requires input dimensions to be divisible by 32 due to its multi-scale pooling architecture.",
       details: [
         "Normalizes values from [0, 255] to PyTorch float tensors in [0.0, 1.0].",
         "Calculates border padding for H and W to round up to the nearest multiple of 32.",
         "Applies channel transpositions from HWC (OpenCV) to 1CHW (PyTorch)."
       ],
-      mathSymbol: "ph = \\lceil H / 32 \\rceil \\times 32",
-      mathFormula: "P_{bottom} = ph - H, \\quad P_{right} = pw - W",
+      mathSymbol: "ph = ⌈H / 32⌉ * 32",
+      mathFormula: "P_bottom = ph - H,  P_right = pw - W",
       codeSnippet: `h, w, c = img_bgr.shape
 img_tensor = torch.from_numpy(img_bgr.transpose(2, 0, 1)).float() / 255.0
 img_tensor = img_tensor.unsqueeze(0).to(device)
@@ -73,62 +73,58 @@ padded_tensor = F.pad(img_tensor, padding)`
       title: "3. RIFE Flow Engine",
       subtitle: "Flow Estimation (IFNet)",
       icon: Cpu,
-      color: "#00f2fe", // Cyan
+      color: "#16D9FF", // Accent Primary
       description: "Real-time Intermediate Flow Estimation (RIFE). Leverages a multi-scale CNN (IFNet) to estimate intermediate flow vectors from T0 and T1 directly, avoiding complex independent optical flow calculations.",
       details: [
         "Estimates coarse-to-fine optical flow fields at 3 resolution scales.",
         "Computes soft fusion occlusion masks to identify overlapping/disappearing clouds.",
         "Accepts arbitrary timesteps t ∈ [0, 1] to synthesize any intermediate temporal position."
       ],
-      mathSymbol: "I_t = (1-t) \\cdot W(I_0, F_{t \\to 0}) + t \\cdot W(I_1, F_{t \\to 1})",
-      mathFormula: "F_{t \\to 0} = t \\cdot F_{1 \\to 0}, \\quad F_{t \\to 1} = (1-t) \\cdot F_{0 \\to 1}",
+      mathSymbol: "I_t = (1-t) * W(I_0, F_t->0) + t * W(I_1, F_t->1)",
+      mathFormula: "F_t->0 = t * F_1->0,  F_t->1 = (1-t) * F_0->1",
       codeSnippet: `# Import official RIFE class from cloned module
-from model.RIFE import Model
+from train_log.RIFE_HDv3 import Model
 
-model = Model(arbitrary=True)
+model = Model()
 model.load_model('train_log')
 model.eval()
 
 # Interpolate at arbitrary timestep t (e.g. 0.5)
 with torch.no_grad():
-    output_tensor = model.inference(img0_tensor, img1_tensor, timestep=t)`
+    output_tensor = model.inference(img0_tensor, img1_tensor, scale=1.0)`
     },
     {
       id: "interpolation",
       title: "4. Frame Synthesis",
       subtitle: "Temporal Super-Resolution",
       icon: Film,
-      color: "#4facfe", // Blue
+      color: "#4F8CFF", // Accent Secondary
       description: "Generates the intermediate frame sequence. Warps the original input frames along the predicted motion path and blends them. A classical Farneback baseline is executed if GPU neural weights are absent.",
       details: [
         "Computes progressive frames for t = [0.25, 0.5, 0.75] (for 3-frame synthesis).",
         "Warping uses bilinear remapping on pixel grids.",
         "Classical fallback computes forward/backward dense flow fields and warps frames."
       ],
-      codeSnippet: `# Temporal step logic
-step = 1.0 / (num_frames + 1)
-timesteps = [step * (i + 1) for i in range(num_frames)]
-
-generated_frames = []
-for t in timesteps:
-    # RIFE inference or fallback
-    frame_tensor = rife_model.inference(img0_tensor, img1_tensor, timestep=t)
-    generated_frames.append(postprocess_tensor(frame_tensor))`
+      codeSnippet: `# Bisection Temporal step logic in rife_inference.py
+f5 = model.inference(img0_tensor, img1_tensor)
+f25 = model.inference(img0_tensor, f5)
+f75 = model.inference(f5, img1_tensor)
+generated_tensors = [f25, f5, f75]`
     },
     {
       id: "evaluation",
       title: "5. Metric Evaluation",
       subtitle: "Validation & Diagnostics",
       icon: BarChart3,
-      color: "#ff9933", // Orange
+      color: "#4F8CFF", // Accent Secondary
       description: "Evaluates the mathematical and structural similarity between original and generated images, providing diagnostic parameters for ISRO engineers.",
       details: [
         "PSNR (Peak Signal-to-Noise Ratio) monitors pixel amplitude reconstruction quality.",
         "SSIM (Structural Similarity Index) measures structural preservation of clouds.",
         "LPIPS approximation models perceptual human vision distance."
       ],
-      mathSymbol: "PSNR = 10 \\cdot \\log_{10}\\left(\\frac{L^2}{MSE}\\right)",
-      mathFormula: "SSIM(x,y) = \\frac{(2\\mu_x\\mu_y+c_1)(2\\sigma_{xy}+c_2)}{(\\mu_x^2+\\mu_y^2+c_1)(\\sigma_x^2+\\sigma_y^2+c_2)}",
+      mathSymbol: "PSNR = 10 * log10( L^2 / MSE )",
+      mathFormula: "SSIM(x,y) = [ (2*ux*uy + c1) * (2*sxy + c2) ] / [ (ux^2 + uy^2 + c1) * (sx^2 + sy^2 + c2) ]",
       codeSnippet: `def calculate_ssim(img1, img2):
     # OpenCV-based SSIM
     x = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY).astype(np.float64)
@@ -145,7 +141,7 @@ for t in timesteps:
       title: "6. Advanced Visualization",
       subtitle: "Flow Vectors & Heatmaps",
       icon: Layers,
-      color: "#bd00ff", // Purple
+      color: "#16D9FF", // Accent Primary
       description: "Visualizes underlying dynamics. Converts dense flow tensors into vector arrow overlays (showing wind/cyclone directions) and outputs difference heatmaps highlighting changing storm centers.",
       details: [
         "Farneback dense optical flow runs to generate detailed wind fields.",
@@ -165,29 +161,28 @@ overlay = cv2.addWeighted(img0, 0.6, heatmap, 0.4, 0.0)`
   const SelectedIcon = selectedNode.icon;
 
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 space-y-8 relative">
+    <div className="relative min-h-screen bg-bg-primary text-text-primary overflow-hidden tech-grid-bg radial-spotlight pt-28 pb-20 px-6 sm:px-12 max-w-7xl mx-auto">
+      <div className="noise-overlay" />
       
       {/* Page Header */}
-      <div className="pb-6 border-b border-white/5">
-        <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-          Pipeline Architecture
-        </h1>
-        <p className="text-sm text-gray-400 mt-1">
-          Explore the modular stages of the SATFLOW AI framework. Click any block in the pipeline to inspect equations, implementation logs, and raw backend code.
+      <div className="pb-6 border-b border-white/5 mb-8">
+        <h1 className="text-2xl font-black tracking-tight text-white uppercase">Pipeline Architecture</h1>
+        <p className="text-xs text-text-muted mt-1 leading-relaxed font-medium">
+          Explore the modular stages of the SATFLOW AI framework. Select a pipeline stage to inspect algorithms and references.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-10">
         
-        {/* Left Side: Interactive Pipeline Chart (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
-          <div className="glass-panel p-6 rounded-xl border border-white/5 flex flex-col items-center justify-center min-h-[450px]">
-            <span className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-8">
-              SATFLOW AI Interactive Flowchart
+        {/* Left Side: Interactive Pipeline Chart */}
+        <div className="lg:col-span-7 flex flex-col gap-6">
+          <div className="glass-panel p-8 rounded-2xl border border-white/5 flex flex-col items-center justify-center min-h-[500px]">
+            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-10">
+              SATFLOW AI Process Pipeline
             </span>
 
             {/* Pipeline flowchart nodes */}
-            <div className="w-full max-w-lg flex flex-col gap-6 relative">
+            <div className="w-full max-w-md flex flex-col gap-4 relative">
               {nodes.map((node, index) => {
                 const NodeIcon = node.icon;
                 const isSelected = node.id === selectedNodeId;
@@ -197,41 +192,41 @@ overlay = cv2.addWeighted(img0, 0.6, heatmap, 0.4, 0.0)`
                     {/* Node Button */}
                     <button
                       onClick={() => setSelectedNodeId(node.id)}
-                      className={`w-full max-w-md p-4 rounded-xl border text-left flex items-center justify-between group transition-all duration-300 ${
+                      className={`w-full p-4 rounded-xl border text-left flex items-center justify-between group transition-all duration-200 ${
                         isSelected 
-                          ? "bg-space-dark border-isro-cyan shadow-lg shadow-isro-cyan/10 scale-102" 
-                          : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10 hover:scale-101"
+                          ? "bg-[#101826]/40 border-accent-primary shadow-[0_0_12px_rgba(22,217,255,0.08)] scale-102" 
+                          : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10"
                       }`}
                     >
                       <div className="flex items-center gap-4">
                         <div 
-                          className="h-10 w-10 rounded-lg flex items-center justify-center transition-colors"
+                          className="h-9 w-9 rounded-lg flex items-center justify-center transition-colors"
                           style={{ 
-                            backgroundColor: isSelected ? `${node.color}20` : "rgba(255, 255, 255, 0.05)",
+                            backgroundColor: isSelected ? `${node.color}15` : "rgba(255, 255, 255, 0.03)",
                             color: node.color
                           }}
                         >
-                          <NodeIcon className="h-5 w-5" />
+                          <NodeIcon className="h-4.5 w-4.5" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-sm font-bold text-white group-hover:text-isro-cyan transition-colors">
+                          <span className="text-xs font-bold text-white group-hover:text-accent-primary transition-colors">
                             {node.title}
                           </span>
-                          <span className="text-xs text-gray-400 mt-0.5">{node.subtitle}</span>
+                          <span className="text-[10px] text-gray-400 mt-0.5 font-medium">{node.subtitle}</span>
                         </div>
                       </div>
                       
                       <div className="flex items-center gap-2">
                         {isSelected && (
-                          <span className="h-2 w-2 rounded-full bg-isro-cyan animate-pulse" />
+                          <span className="h-1.5 w-1.5 rounded-full bg-accent-primary animate-pulse" />
                         )}
-                        <ChevronRight className={`h-4 w-4 transition-transform ${isSelected ? "text-isro-cyan translate-x-1" : "text-gray-500"}`} />
+                        <ChevronRight className={`h-3.5 w-3.5 transition-transform ${isSelected ? "text-accent-primary translate-x-0.5" : "text-gray-500"}`} />
                       </div>
                     </button>
 
                     {/* Connecting line */}
                     {index < nodes.length - 1 && (
-                      <div className="h-6 w-0.5 bg-gradient-to-b from-white/10 to-white/5 my-1" />
+                      <div className="h-5 w-0.5 bg-gradient-to-b from-white/10 to-transparent my-0.5" />
                     )}
                   </div>
                 );
@@ -240,46 +235,46 @@ overlay = cv2.addWeighted(img0, 0.6, heatmap, 0.4, 0.0)`
           </div>
         </div>
 
-        {/* Right Side: Details Pane (4 cols) */}
-        <div className="lg:col-span-4 flex flex-col gap-6">
+        {/* Right Side: Details Pane */}
+        <div className="lg:col-span-5 flex flex-col gap-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedNode.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              className="glass-panel p-5 rounded-xl border border-white/5 flex flex-col gap-5 min-h-[500px]"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] as const }}
+              className="glass-panel p-6 rounded-2xl border border-white/5 flex flex-col gap-5 min-h-[500px]"
             >
               {/* Card Header */}
-              <div className="flex items-center gap-3 pb-4 border-b border-white/5">
+              <div className="flex items-center gap-3.5 pb-4 border-b border-white/5">
                 <div 
-                  className="h-10 w-10 rounded-lg flex items-center justify-center"
+                  className="h-9 w-9 rounded-lg flex items-center justify-center"
                   style={{ 
-                    backgroundColor: `${selectedNode.color}20`,
+                    backgroundColor: `${selectedNode.color}15`,
                     color: selectedNode.color
                   }}
                 >
-                  <SelectedIcon className="h-5 w-5" />
+                  <SelectedIcon className="h-4.5 w-4.5" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-base font-bold text-white">{selectedNode.title.split(". ")[1]}</span>
-                  <span className="text-xs text-gray-400">{selectedNode.subtitle}</span>
+                  <span className="text-sm font-black text-white uppercase">{selectedNode.title.split(". ")[1]}</span>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">{selectedNode.subtitle}</span>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="text-xs text-gray-300 leading-relaxed">
+              <div className="text-xs text-text-muted leading-relaxed font-medium">
                 <p>{selectedNode.description}</p>
               </div>
 
               {/* Technical bullet points */}
               <div className="space-y-2">
-                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Operational Details</span>
-                <ul className="space-y-1.5">
+                <span className="text-[9px] text-gray-500 font-bold uppercase tracking-wider block">Operational Details</span>
+                <ul className="space-y-2">
                   {selectedNode.details.map((detail, index) => (
-                    <li key={index} className="text-xs text-gray-400 flex items-start gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-isro-cyan mt-1.5 shrink-0" />
+                    <li key={index} className="text-xs text-gray-400 flex items-start gap-2 leading-relaxed font-medium">
+                      <span className="h-1 w-1 rounded-full bg-accent-primary mt-2 shrink-0" />
                       <span>{detail}</span>
                     </li>
                   ))}
@@ -288,13 +283,13 @@ overlay = cv2.addWeighted(img0, 0.6, heatmap, 0.4, 0.0)`
 
               {/* Mathematical Formula (if available) */}
               {selectedNode.mathSymbol && (
-                <div className="p-3 bg-white/3 font-mono rounded-lg border border-white/5 space-y-1">
-                  <span className="text-[9px] text-isro-orange font-bold uppercase tracking-wider block">Mathematical Formulations</span>
-                  <div className="text-xs text-white text-center py-1">
+                <div className="p-3.5 bg-[#05070B]/60 font-mono rounded-xl border border-white/5 space-y-1">
+                  <span className="text-[9px] text-accent-secondary font-black uppercase tracking-wider block">Mathematical Formula</span>
+                  <div className="text-xs text-white font-bold py-1 select-all">
                     {selectedNode.mathSymbol}
                   </div>
                   {selectedNode.mathFormula && (
-                    <div className="text-[11px] text-gray-400 text-center">
+                    <div className="text-[10px] text-gray-400 select-all">
                       {selectedNode.mathFormula}
                     </div>
                   )}
@@ -303,11 +298,11 @@ overlay = cv2.addWeighted(img0, 0.6, heatmap, 0.4, 0.0)`
 
               {/* Code Snippet */}
               <div className="space-y-2 flex-1 flex flex-col">
-                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider flex items-center gap-1">
+                <span className="text-[9px] text-gray-500 font-bold uppercase tracking-wider flex items-center gap-1.5">
                   <Code className="h-3 w-3" />
-                  <span>Implementation Reference</span>
+                  <span>Python Source Implementation</span>
                 </span>
-                <pre className="p-3 bg-space-deep border border-white/5 rounded-lg text-[10px] text-gray-300 font-mono overflow-x-auto leading-relaxed max-h-[220px] select-text">
+                <pre className="p-3.5 bg-[#05070B] border border-white/5 rounded-xl text-[10px] text-gray-300 font-mono overflow-x-auto leading-relaxed max-h-[220px] select-text">
                   <code>{selectedNode.codeSnippet}</code>
                 </pre>
               </div>
