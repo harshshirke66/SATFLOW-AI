@@ -7,6 +7,35 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
+interface AvatarProps {
+  src?: string;
+  initials: string;
+  isLeader?: boolean;
+}
+
+const MemberAvatar = ({ src, initials, isLeader }: AvatarProps) => {
+  const [hasError, setHasError] = React.useState(false);
+  
+  return (
+    <div className={`h-20 w-20 rounded-full border flex items-center justify-center text-white text-base font-black relative overflow-hidden group-hover:scale-105 transition-transform duration-300 ${
+      isLeader 
+        ? "border-accent-primary bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 shadow-[0_0_12px_rgba(22,217,255,0.2)]" 
+        : "border-white/10 bg-gradient-to-br from-white/5 to-white/10"
+    }`}>
+      {src && !hasError ? (
+        <img 
+          src={src} 
+          alt={initials} 
+          onError={() => setHasError(true)} 
+          className="absolute inset-0 object-cover w-full h-full" 
+        />
+      ) : (
+        <span>{initials}</span>
+      )}
+    </div>
+  );
+};
+
 export default function AboutPage() {
   const hazards = [
     {
@@ -179,6 +208,79 @@ export default function AboutPage() {
             <p className="text-xs text-text-muted leading-relaxed font-medium">
               Fuse observations from multiple satellites (e.g. Indian INSAT and Japanese Himawari-9) by aligning their coordinate maps and using RIFE's arbitrary timestep parameter to fill in the asynchronous gaps between their passes.
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Team Section */}
+      <div className="space-y-6 relative z-10 pt-8 border-t border-white/5">
+        <div className="text-center max-w-xl mx-auto space-y-2">
+          <span className="text-[10px] font-black tracking-widest text-accent-primary uppercase px-3 py-1 rounded-full bg-accent-primary/10 border border-accent-primary/20">
+            Hackathon Submission
+          </span>
+          <h2 className="text-xl font-black text-white uppercase tracking-tight">Team ByteBots</h2>
+          <p className="text-xs text-text-muted leading-relaxed font-medium">
+            The computer vision engineers and data researchers behind SATFLOW AI.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
+          {/* Harsh Shirke (Leader) */}
+          <div className="glass-panel p-5 rounded-2xl border border-accent-primary/30 shadow-[0_0_15px_rgba(22,217,255,0.05)] flex flex-col items-center text-center gap-4 group hover:border-accent-primary/50 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute top-2.5 right-2.5">
+              <span className="text-[8px] font-black text-accent-primary bg-accent-primary/10 border border-accent-primary/20 px-2 py-0.5 rounded-full uppercase">
+                Leader
+              </span>
+            </div>
+            
+            <MemberAvatar src="/team/harsh.png" initials="HS" isLeader={true} />
+
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold text-white group-hover:text-accent-primary transition-colors">Harsh Shirke</h3>
+              <p className="text-[10px] text-accent-primary font-bold uppercase tracking-wider">Team Leader & AI Lead</p>
+              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-1.5 border-t border-white/5 mt-1.5">
+                RIFE model optimization, PyTorch hardware execution cores, and pipeline flow controllers.
+              </p>
+            </div>
+          </div>
+
+          {/* Devansh Pandey */}
+          <div className="glass-panel p-5 rounded-2xl border border-white/5 flex flex-col items-center text-center gap-4 group hover:border-accent-secondary/30 transition-all duration-300 relative">
+            <MemberAvatar src="/team/devansh.png" initials="DP" />
+
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors">Devansh Pandey</h3>
+              <p className="text-[10px] text-accent-secondary font-bold uppercase tracking-wider">Full-Stack Architect</p>
+              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-1.5 border-t border-white/5 mt-1.5">
+                FastAPI endpoints backend, Next.js 15 UI, dark glassmorphism styling, and state management.
+              </p>
+            </div>
+          </div>
+
+          {/* Deepa Choudhary */}
+          <div className="glass-panel p-5 rounded-2xl border border-white/5 flex flex-col items-center text-center gap-4 group hover:border-accent-secondary/30 transition-all duration-300 relative">
+            <MemberAvatar src="/team/deepa.png" initials="DC" />
+
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors">Deepa Choudhary</h3>
+              <p className="text-[10px] text-accent-secondary font-bold uppercase tracking-wider">Computer Vision Lead</p>
+              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-1.5 border-t border-white/5 mt-1.5">
+                Farneback dense flow algorithms, heatmaps, vector visualization, and performance indices.
+              </p>
+            </div>
+          </div>
+
+          {/* Aditi Deshmukh */}
+          <div className="glass-panel p-5 rounded-2xl border border-white/5 flex flex-col items-center text-center gap-4 group hover:border-accent-secondary/30 transition-all duration-300 relative">
+            <MemberAvatar src="/team/aditi.png" initials="AD" />
+
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold text-white group-hover:text-accent-secondary transition-colors">Aditi Deshmukh</h3>
+              <p className="text-[10px] text-accent-secondary font-bold uppercase tracking-wider">Data Operations Analyst</p>
+              <p className="text-[10px] text-text-muted leading-relaxed font-medium pt-1.5 border-t border-white/5 mt-1.5">
+                INSAT satellite raw sensor ingestion, drift trajectories, and meteorological validations.
+              </p>
+            </div>
           </div>
         </div>
       </div>
