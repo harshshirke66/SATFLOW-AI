@@ -135,3 +135,29 @@ Our workstation UI is designed around **5 primary interaction nodes** to maximiz
     *   Interactive pipeline visualization mapping frontend operations directly to underlying mathematical routing modules.
 5.  **Interactive Timeline Controller**:
     *   Playback deck with Play, Pause, Step-Forward, Step-Backward, and speed loop controls to simulate fluid cyclone movements.
+
+---
+
+## 🔗 Slide Placement Strategy for Live Demo Link
+
+Place your live prototype links in these key slides for maximum judge engagement:
+
+### 1. 🛝 Slide 1: Title & Introduction Slide (Bottom Footer)
+*   **Purpose**: Allows judges to open the workstation on their phones or laptops at the very start of the presentation.
+*   **Copy-Paste Template**:
+    *   🌐 **Live Web Workstation**: https://satflowai.vercel.app
+    *   📂 **GitHub Repository**: https://github.com/harshshirke66/SATFLOW-AI
+
+### 2. 🛝 Slide 5: Mock Screens & Wireframes Slide (Central Callout)
+*   **Purpose**: Serves as the trigger visual during your transition from slides to the live screen-share walkthrough.
+*   **Copy-Paste Template**:
+    *   🚀 **Launch Live Prototype** ➔ https://satflowai.vercel.app
+
+### 3. 🛝 Slide 6: Thank You / Q&A Slide (Center Screen)
+*   **Purpose**: Remains visible on the screen during the entire 5-10 minute Q&A panel so judges can note the URL.
+*   **Copy-Paste Template**:
+    *   **Thank You!**
+    *   *ByteBots Team*
+    *   🌐 **Workstation URL**: https://satflowai.vercel.app
+    *   📂 **Source Code**: https://github.com/harshshirke66/SATFLOW-AI
+
