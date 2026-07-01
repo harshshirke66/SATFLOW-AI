@@ -122,9 +122,21 @@ sequenceDiagram
 
 ## 🛝 Slide 5: Workstation Wireframes & Mock Screens
 
-![SATFLOW AI Workstation Mockup](file:///C:/Users/DELL/.gemini/antigravity-ide/brain/5a5c22d5-7f8c-4a34-b8af-2180afb241e4/satflow_workspace_mockup_1782915318944.png)
+Below are the actual high-resolution screenshots of your live deployed SATFLOW AI application:
 
-*(The mockup image is saved in your root directory as [satflow_workspace_mockup.png](file:///d:/ISRO%20HACKATHON/satflow_workspace_mockup.png). Copy and insert it directly into this slide!)*
+### 1. Home / Landing Page (Orbiting Globe & Hero Section)
+![Homepage Screenshot](file:///C:/Users/DELL/.gemini/antigravity-ide/brain/5a5c22d5-7f8c-4a34-b8af-2180afb241e4/satflow_homepage_1782915637550.png)
+*(Saved in your root directory as [real_screenshot_home.png](file:///d:/ISRO%20HACKATHON/real_screenshot_home.png))*
+
+### 2. Workstation Dashboard (Dual Slider, Controls & Metrics)
+![Dashboard Screenshot](file:///C:/Users/DELL/.gemini/antigravity-ide/brain/5a5c22d5-7f8c-4a34-b8af-2180afb241e4/satflow_dashboard_1782915655646.png)
+*(Saved in your root directory as [real_screenshot_dashboard.png](file:///d:/ISRO%20HACKATHON/real_screenshot_dashboard.png))*
+
+### 3. Bento Hazards Grid & Team Radar HUD (About Page)
+![About Page Screenshot](file:///C:/Users/DELL/.gemini/antigravity-ide/brain/5a5c22d5-7f8c-4a34-b8af-2180afb241e4/satflow_about_1782915671747.png)
+*(Saved in your root directory as [real_screenshot_about.png](file:///d:/ISRO%20HACKATHON/real_screenshot_about.png))*
+
+---
 
 Our workstation UI is designed around **5 primary interaction nodes** to maximize analyst productivity:
 
