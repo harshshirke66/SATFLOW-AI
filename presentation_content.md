@@ -122,6 +122,10 @@ sequenceDiagram
 
 ## 🛝 Slide 5: Workstation Wireframes & Mock Screens
 
+![SATFLOW AI Workstation Mockup](file:///C:/Users/DELL/.gemini/antigravity-ide/brain/5a5c22d5-7f8c-4a34-b8af-2180afb241e4/satflow_workspace_mockup_1782915318944.png)
+
+*(The mockup image is saved in your root directory as [satflow_workspace_mockup.png](file:///d:/ISRO%20HACKATHON/satflow_workspace_mockup.png). Copy and insert it directly into this slide!)*
+
 Our workstation UI is designed around **5 primary interaction nodes** to maximize analyst productivity:
 
 1.  **Mission Control Console (Workstation)**:
@@ -140,13 +144,6 @@ Our workstation UI is designed around **5 primary interaction nodes** to maximiz
 
 ## 🔗 Slide Placement Strategy for Live Demo Link
 
-Place your live prototype links in these key slides for maximum judge engagement:
-
-### 1. 🛝 Slide 1: Title & Introduction Slide (Bottom Footer)
-*   **Purpose**: Allows judges to open the workstation on their phones or laptops at the very start of the presentation.
-*   **Copy-Paste Template**:
-    *   🌐 **Live Web Workstation**: https://satflowai.vercel.app
-    *   📂 **GitHub Repository**: https://github.com/harshshirke66/SATFLOW-AI
 
 ### 2. 🛝 Slide 5: Mock Screens & Wireframes Slide (Central Callout)
 *   **Purpose**: Serves as the trigger visual during your transition from slides to the live screen-share walkthrough.
